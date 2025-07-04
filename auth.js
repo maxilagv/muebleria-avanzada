@@ -21,7 +21,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "index.html";
+    window.location.href = "panel.html";
   } catch (error) {
     showMessage("Credenciales inválidas", true);
     console.error("Error de inicio de sesión:", error);
