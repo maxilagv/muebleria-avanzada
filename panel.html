@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mueblería con Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script type="module" src="script.js" defer></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a202c, #2d3748, #4a5568);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      color: #e2e8f0;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .c1 {
+      background-color: rgba(30, 41, 59, 0.9);
+      padding: 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(71, 85, 105, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    /* Estilos para inputs de texto, número, textareas y selects */
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      background-color: #e2e8f0; /* Fondo claro para el input */
+      border: 1px solid #4a5568;
+      color: #1a202c; /* Color de texto negro */
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5);
+      outline: none;
+    }
+
+    /* Estilo para las opciones seleccionadas en el select */
+    select option {
+      color: #1a202c; /* Color de texto negro para las opciones */
+      background-color: #e2e8f0; /* Fondo claro para las opciones */
+    }
+
+    .c6 {
+      background-color: #4299e1;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .c6:hover {
+      background-color: #3182ce;
+      transform: translateY(-2px);
+    }
+
+    .c7 {
+      background-color: #9f7aea;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .c7:hover {
+      background-color: #805ad5;
+      transform: translateY(-2px);
+    }
+
+    .c8 {
+      background-color: #e53e3e;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .c8:hover {
+      background-color: #c53030;
+      transform: translateY(-2px);
+    }
+
+    .message-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .message-box.show {
+      opacity: 1;
+    }
+    .message-box.error {
+      background-color: #f44336;
+    }
+
+    .c12 li {
+      background-color: #2d3748;
+      color: #e2e8f0;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #4a5568;
+    }
+
+    .c13 {
+      background-color: rgba(30, 41, 59, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(71, 85, 105, 0.5);
+    }
+
+    .c13:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .c13 img {
+      border-radius: 1rem 1rem 0 0;
+    }
+
+    /* Estilos para el modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: #1a202c;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      color: #e2e8f0;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #e2e8f0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="p-6 space-y-12">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-extrabold text-blue-300">Panel de Administración</h1>
+    <button id="logout" class="c8">Cerrar sesión</button>
+  </div>
+
+  <div id="message-box" class="message-box"></div>
+
+  <section class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+    <div class="c1">
+      <h2 class="text-2xl font-bold text-blue-300 mb-6 flex items-center">
+        <i class="fas fa-tags mr-3 text-purple-400"></i> Gestionar Categorías
+      </h2>
+      <form id="form-categorias" class="grid gap-4 mb-6">
+        <input type="text" id="categoria" placeholder="Nombre de categoría" required />
+        <input type="text" id="imagen-categoria" placeholder="URL de imagen de categoría" required />
+        <button type="submit" class="c7">
+          <i class="fas fa-plus-circle mr-2"></i> Agregar Categoría
+        </button>
+      </form>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-300 mb-3">Categorías Existentes:</h3>
+        <ul id="ul-categorias" class="space-y-3">
+        </ul>
+      </div>
+    </div>
+
+    <div class="c1">
+      <h2 class="text-2xl font-bold text-blue-300 mb-6 flex items-center">
+        <i class="fas fa-box-open mr-3 text-blue-400"></i> Agregar Producto
+      </h2>
+      <form id="form-productos" class="grid gap-4">
+        <input type="text" id="nombre-producto" placeholder="Nombre del producto" required />
+        <textarea id="descripcion-producto" placeholder="Descripción" class="h-24 resize-y" required></textarea>
+        <input type="number" id="precio-producto" placeholder="Precio" required />
+        <input type="text" id="imagen-producto" placeholder="URL de imagen" required />
+        <select id="categoria-producto" required>
+          <option value="">Seleccionar Categoría</option>
+        </select>
+        <button type="submit" class="c6">
+          <i class="fas fa-plus mr-2"></i> Agregar Producto
+        </button>
+      </form>
+      <div class="mt-8">
+        <h3 class="text-xl font-semibold text-gray-300 mb-3">Productos Existentes:</h3>
+        <ul id="ul-productos" class="space-y-3">
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modales de edición -->
+  <div id="edit-category-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-button" id="close-category-modal">&times;</button>
+      <h2 class="text-2xl font-bold text-blue-300 mb-6">Editar Categoría</h2>
+      <form id="edit-category-form" class="grid gap-4">
+        <input type="hidden" id="edit-category-id">
+        <label for="edit-category-name" class="text-gray-300">Nombre de Categoría:</label>
+        <input type="text" id="edit-category-name" required />
+        <label for="edit-category-image" class="text-gray-300">URL de Imagen:</label>
+        <input type="text" id="edit-category-image" required />
+        <button type="submit" class="c7">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="edit-product-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-button" id="close-product-modal">&times;</button>
+      <h2 class="text-2xl font-bold text-blue-300 mb-6">Editar Producto</h2>
+      <form id="edit-product-form" class="grid gap-4">
+        <input type="hidden" id="edit-product-id">
+        <label for="edit-product-name" class="text-gray-300">Nombre del Producto:</label>
+        <input type="text" id="edit-product-name" required />
+        <label for="edit-product-description" class="text-gray-300">Descripción:</label>
+        <textarea id="edit-product-description" class="h-24 resize-y" required></textarea>
+        <label for="edit-product-price" class="text-gray-300">Precio:</label>
+        <input type="number" id="edit-product-price" required />
+        <label for="edit-product-image" class="text-gray-300">URL de Imagen:</label>
+        <input type="text" id="edit-product-image" required />
+        <label for="edit-product-category" class="text-gray-300">Categoría:</label>
+        <select id="edit-product-category" required>
+          <!-- Opciones de categoría se cargarán aquí -->
+        </select>
+        <button type="submit" class="c6">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="space-y-12">
+  </div>
+</body>
+</html>

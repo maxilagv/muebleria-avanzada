@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respaldo Somier Luciano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="module" src="main.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f5ee;
+            color: #3a3a3a;
+        }
+        .c2 {
+            background-color: #f0ebe3;
+        }
+        .c3 {
+            color: #6d5b4f;
+        }
+        .c4 {
+            border-color: #c4b8aa;
+        }
+        .c5:hover {
+            color: #a08c7e;
+        }
+        .c6 {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: #f8f5ee;
+        }
+        .c7 {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .c7 {
+                display: block;
+            }
+            .c8 {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #f8f5ee;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                padding: 1rem 0;
+            }
+            .c8.active {
+                display: flex;
+            }
+            .c9 {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #e0d8cf;
+            }
+            .c10 {
+                border-bottom: none;
+            }
+        }
+        .c11 {
+            width: 100%;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            border-bottom-width: 1px;
+        }
+        .c12 {
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .c13 {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+        }
+        .c14 {
+            font-weight: 400;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+        .c16 {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        .c17 {
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+        .c18 {
+            color: #4a5568;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-duration: 200ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .c18:hover {
+            color: #a08c7e;
+        }
+        .c19 {
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .c20 {
+            margin-bottom: 4rem;
+            text-align: center;
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+            border-radius: 0.5rem;
+        }
+        .c21 {
+            font-size: 3rem;
+            line-height: 1;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .c22 {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            color: #5a6a7a;
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .c23 {
+            margin-top: 2rem;
+        }
+        .c24 {
+            display: inline-block;
+            background-color: #6d5b4f;
+            color: #ffffff;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            font-weight: 600;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            border-radius: 9999px;
+            transition-property: opacity;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .c24:hover {
+            opacity: 0.9;
+        }
+        .c25 {
+            margin-bottom: 4rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            border-bottom-width: 1px;
+        }
+        .c26 {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .c27 {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .c27 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1024px) {
+            .c27 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        .c28 {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .c29 {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        .c30 {
+            font-size: 1.5rem;
+            line-height: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .c31 {
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+        .c32 {
+            font-weight: 500;
+        }
+        .c33 {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .c33 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        .c34 {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        @media (min-width: 768px) {
+            .c34 {
+                flex-direction: row;
+                text-align: left;
+            }
+        }
+        .c35 {
+            width: 12rem;
+            height: 9rem;
+            object-fit: cover;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 768px) {
+            .c35 {
+                margin-bottom: 0;
+                margin-right: 1.5rem;
+            }
+        }
+        .c36 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .c37 {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            color: #5a6a7a;
+            margin-bottom: 2rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .c38 {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+        .c39 {
+            margin-bottom: 0.5rem;
+        }
+        .c40 {
+            background-color: #6d5b4f;
+            color: #ffffff;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            margin-top: 3rem;
+        }
+        .c41 {
+            text-align: center;
+        }
+        .c42 {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            margin-bottom: 1rem;
+        }
+        .c43 {
+            display: flex;
+            justify-content: center;
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        .c44 {
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-duration: 200ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .c44:hover {
+            color: #f0ebe3;
+        }
+
+        .product-category-section {
+            display: none;
+        }
+        .product-category-section.active {
+            display: block;
+        }
+
+        .highlight-result {
+            border: 2px solid #a08c7e;
+            box-shadow: 0 0 15px rgba(160, 140, 126, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Estilos para el mini panel de categorías */
+        .category-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .category-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.5rem;
+            overflow: hidden; /* Para que el borde redondeado se aplique a los hijos */
+            top: 100%; /* Posicionar debajo del botón */
+            left: 0;
+        }
+
+        .category-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .category-dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .category-dropdown:hover .category-dropdown-content {
+            display: block;
+        }
+
+        .category-dropdown-content.active { /* Para activar con JS */
+            display: block;
+        }
+
+        /* Estilos para el botón de volver */
+        .back-to-catalog-btn {
+            background-color: #6d5b4f;
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            transition-property: opacity;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem; /* Espacio superior */
+            display: inline-block; /* Para centrarlo si es necesario o aplicar margen */
+            text-align: center;
+        }
+
+        .back-to-catalog-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="c1">
+    <header class="c6 c11 c4">
+        <nav class="c12">
+            <a href="#inicio" class="c13 c3">
+                Respaldo Somier Luciano <span class="c14">Muebles elegantes</span>
+            </a>
+            <button class="c7 c15 focus:outline-none" aria-label="Toggle navigation">
+                <svg class="c16 c3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            <div id="nav-menu" class="c8 c17">
+                <a href="#inicio" class="c18 c5 py-2">Inicio</a>
+                <a href="#nuestro-catalogo" class="c18 c5 py-2" id="catalog-link">Nuestro Catálogo</a>
+                
+                <div class="category-dropdown">
+                    <a href="#" class="c18 c5 py-2" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-1 text-xs"></i></a>
+                    <div class="category-dropdown-content" id="dynamic-category-nav">
+                        </div>
+                </div>
+                
+                <a href="#contacto" class="c18 c5 py-2">Contacto</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="c19">
+        <section id="inicio" class="c20 c2">
+            <h2 class="c21 c3">Transforma tu espacio con <br>Muebles Elegancia</h2>
+            <p class="c22">Descubre nuestra exclusiva colección de muebles diseñados para brindarte confort, estilo y durabilidad.</p>
+            <div class="c23">
+                <a href="#nuestro-catalogo" class="c24">Explorar Catálogo</a>
+            </div>
+        </section>
+
+        <section id="nuestro-catalogo" class="c25 c2">
+            <h3 class="c26 c3">Nuestro Catálogo</h3>
+            <div class="mb-8 flex justify-center items-center">
+                <input type="text" id="search-input" placeholder="Buscar productos..." class="p-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-800">
+                <button id="search-button" class="bg-blue-500 text-white p-2 rounded-r-md hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div id="catalog-container" class="c27">
+                
+            </div>
+        </section>
+
+        <div id="dynamic-product-sections">
+            </div>
+       
+        <section id="contacto" class="c36 c2">
+            <h3 class="c26 c3">Contáctanos</h3>
+            <p class="c37">
+                ¿Tienes alguna pregunta o necesitas asesoramiento? Estamos aquí para ayudarte a encontrar los muebles perfectos para tu hogar.
+            </p>
+            <div class="c38 c3">
+                <p class="c39">Email: <a href="mailto:info@muebleselegancia.com" class="c5">maxilavagetto@gmail.com</a></p>
+                <p class="c39">Teléfono: <a href="tel:+541123456789" class="c5">+54 11 3772-5766 </a></p>
+                <p>Dirección: triunvirato esquina Juan B justo</p>
+                <p> redes sociales: <a href="https://www.instagram.com/respaldo.sommier.luciano?utm_source=qr&igsh=MWcxNmRpcGI0MW5tdA=="> instagram</p>
+            </div>
+        </section>
+    </main>
+
+    
+    <footer class="c40">
+        <div class="c12 c41">
+            <p class="c42">&copy; 2024 Muebles Elegancia. Todos los derechos reservados.</p>
+            <div class="c43">
+                
+                <a href="#" class="c44 c3" aria-label="Facebook">
+                    
+                    <svg fill="currentColor" viewBox="0 0 24 24" class="c16"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h3V2h-3c-3.15 0-4 1.77-4 4v2.5H8v4h3.5v9.5h4V13.5z"></path></svg>
+                </a>
+                <a href="#" class="c44 c3" aria-label="Instagram">
+                    <svg fill="currentColor" viewBox="0 0 24 24" class="c16"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4c0 3.2-2.6 5.8-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2zm-.2 2A2.003 2.003 0 004 6.2v8.4C4 16.97 4.542 17.5 5.2 17.5h8.4c.658 0 1.2-.53 1.2-1.2V7.8C14.8 4.6 12.2 2 7.8 2zm9.2 2.5a.8.8 0 11-1.6 0 .8.8 0 011.6 0zM12 9a3 3 0 100 6 3 3 0 000-6zm0 2a1 1 0 110 2 1 1 0 010-2z"></path></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="auth.js" defer></script>
+  <style>
+    
+    body {
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(135deg, #1a202c, #2d3748, #4a5568); 
+      background-size: 400% 400%; 
+      animation: gradientAnimation 15s ease infinite; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh; 
+      color: #e2e8f0; 
+    }
+
+    
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+   
+    .login-container {
+      background-color: rgba(30, 41, 59, 0.9); 
+      padding: 2.5rem; 
+      border-radius: 1rem; 
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); 
+      max-width: 400px; 
+      width: 90%; 
+      border: 1px solid rgba(71, 85, 105, 0.5); 
+      backdrop-filter: blur(5px); 
+    }
+
+    
+    input[type="email"],
+    input[type="password"] {
+      background-color: #2d3748; 
+      border: 1px solid #4a5568; 
+      color: #e2e8f0; 
+      padding: 0.75rem 1rem; 
+      border-radius: 0.5rem; 
+      transition: all 0.3s ease; 
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #63b3ed; 
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5); 
+      outline: none; 
+    }
+
+    
+    button[type="submit"] {
+      background-color: #4299e1; 
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease; 
+    }
+
+    button[type="submit"]:hover {
+      background-color: #3182ce; 
+      transform: translateY(-2px); 
+    }
+
+    .message-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50; 
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .message-box.show {
+      opacity: 1;
+    }
+    .message-box.error {
+      background-color: #f44336; 
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container space-y-6">
+    <h1 class="text-3xl font-extrabold text-center text-blue-300">Ingreso al Panel</h1>
+    <div id="msg" class="hidden message-box"></div>
+    <form id="login-form" class="grid gap-4">
+      <input type="email" id="email" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit">Ingresar</button>
+    </form>
+  </div>
+
+  <script>
+  </script>
+</body>
+</html>
+
