@@ -12,7 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
 
-    let allProducts = []; 
+    const productDetailModal = document.getElementById('product-detail-modal');
+    const closeProductDetailModal = document.getElementById('close-product-detail-modal');
+    const modalProductImage = document.getElementById('modal-product-image');
+    const modalProductName = document.getElementById('modal-product-name');
+    const modalProductDescription = document.getElementById('modal-product-description');
+    const modalProductPrice = document.getElementById('modal-product-price');
+
+    let allProducts = [];
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
@@ -34,9 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Function to show a specific section and update browser history
     function showSection(sectionId, pushState = true) {
-        const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo');
+        const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
             if (section.id === sectionId) {
                 section.style.display = 'block';
@@ -46,25 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Update browser history
         if (pushState) {
             history.pushState({ section: sectionId }, '', `#${sectionId}`);
         }
     }
 
-    // New function to display all products
     function showAllProducts(pushState = true) {
-        // Hide individual category sections
         const allCategorySections = document.querySelectorAll('.product-category-section');
         allCategorySections.forEach(section => {
             section.style.display = 'none';
         });
 
-        // Clear existing products in catalog-container and dynamic-product-sections to re-render all
         catalogContainer.innerHTML = '';
         dynamicProductSections.innerHTML = '';
 
-        // Re-render all products, grouping them by category for display
         const productsByCategory = {};
         allProducts.forEach(productData => {
             const categoryName = productData.categoria.toLowerCase();
@@ -93,48 +94,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h4 class="c30 c3">${product.nombre}</h4>
                     <p class="c31">${product.descripcion}</p>
                     <p class="c32 c3">$${product.precio.toFixed(2)}</p>
-                    <a href="#" class="c32 c3 c5">Ver detalles &rarr;</a>
+                    <a href="#" class="c32 c3 c5 view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
                 `;
                 productGrid.appendChild(productCard);
             });
             dynamicProductSections.appendChild(categorySection);
-            categorySection.style.display = 'block'; // Ensure all newly rendered sections are visible
+            categorySection.style.display = 'block';
         }
 
-        // Ensure the main catalog section is visible
-        showSection('nuestro-catalogo', pushState); // Pass pushState to showSection
+        showSection('nuestro-catalogo', pushState);
     }
 
-    // Function to load content from Firestore
     async function cargarContenido() {
-        // Clear existing content
         catalogContainer.innerHTML = '';
         dynamicProductSections.innerHTML = '';
         dynamicCategoryNav.innerHTML = '';
-        allProducts = []; 
+        allProducts = [];
 
-        // Load categories
         onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
-            catalogContainer.innerHTML = ''; 
-            dynamicCategoryNav.innerHTML = ''; 
+            catalogContainer.innerHTML = '';
+            dynamicCategoryNav.innerHTML = '';
 
             const categories = [];
             categorySnapshot.forEach(doc => {
                 categories.push({ id: doc.id, ...doc.data() });
             });
 
-            // Sort categories by name
             categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-            // Add the "View All Products" link first
             const viewAllLink = document.createElement('a');
-            viewAllLink.href = `#`; // No specific section, handled by JS
+            viewAllLink.href = `#`;
             viewAllLink.className = 'c18 c5 py-2 nav-category-link';
             viewAllLink.dataset.category = 'all';
             viewAllLink.textContent = 'Ver Todos los Productos';
             dynamicCategoryNav.appendChild(viewAllLink);
 
-            // Create category cards and navigation links
             categories.forEach(category => {
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'c28 category-card';
@@ -147,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 catalogContainer.appendChild(categoryCard);
 
-                // Add navigation link for the category
                 const navLink = document.createElement('a');
                 navLink.href = `#category-${category.nombre.toLowerCase()}`;
                 navLink.className = 'c18 c5 py-2 nav-category-link';
@@ -156,14 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 dynamicCategoryNav.appendChild(navLink);
             });
 
-            // Load products
             onSnapshot(collection(db, "muebles"), (productSnapshot) => {
-                dynamicProductSections.innerHTML = ''; 
+                dynamicProductSections.innerHTML = '';
 
                 const productsByCategory = {};
                 productSnapshot.forEach(doc => {
                     const productData = { id: doc.id, ...doc.data() };
-                    allProducts.push(productData); 
+                    allProducts.push(productData);
                     const categoryName = productData.categoria.toLowerCase();
                     if (!productsByCategory[categoryName]) {
                         productsByCategory[categoryName] = [];
@@ -171,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     productsByCategory[categoryName].push(productData);
                 });
 
-                // Create sections for each product category
                 for (const categoryName in productsByCategory) {
                     const categorySection = document.createElement('section');
                     categorySection.id = `category-${categoryName}`;
@@ -185,26 +176,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     productsByCategory[categoryName].forEach(product => {
                         const productCard = document.createElement('div');
                         productCard.className = 'c28 product-card';
-                        productCard.dataset.productId = product.id; // Add ID for reference
+                        productCard.dataset.productId = product.id;
                         productCard.innerHTML = `
                             <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="c29">
                             <h4 class="c30 c3">${product.nombre}</h4>
                             <p class="c31">${product.descripcion}</p>
                             <p class="c32 c3">$${product.precio.toFixed(2)}</p>
-                            <a href="#" class="c32 c3 c5">Ver detalles &rarr;</a>
+                            <a href="#" class="c32 c3 c5 view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
                         `;
                         productGrid.appendChild(productCard);
                     });
                     dynamicProductSections.appendChild(categorySection);
                 }
 
-                // Show the initial catalog section without adding to history
-                showSection('nuestro-catalogo', false); 
+                showSection('nuestro-catalogo', false);
+
+                if (searchButton && searchInput) {
+                    searchButton.addEventListener('click', () => performSearch());
+                    searchInput.addEventListener('keypress', (event) => {
+                        if (event.key === 'Enter') performSearch();
+                    });
+                }
             });
         });
     }
 
-    // Event listener for category links and "View All Products"
     document.addEventListener('click', (event) => {
         if (event.target.classList.contains('view-category') || event.target.classList.contains('nav-category-link')) {
             event.preventDefault();
@@ -217,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener for the "Nuestro Catálogo" link
     if (catalogLink) {
         catalogLink.addEventListener('click', (event) => {
             event.preventDefault();
@@ -225,57 +220,85 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event listeners for search functionality
-    searchButton.addEventListener('click', () => {
-        performSearch();
-    });
-
-    searchInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            performSearch();
-        }
-    });
-
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const productCards = document.querySelectorAll('.product-card');
-
-        // Show the catalog section when performing a search
-        showSection('nuestro-catalogo');
+        let foundCard = null;
 
         productCards.forEach(card => {
             const productName = card.querySelector('h4').textContent.toLowerCase();
             const productDescription = card.querySelector('p').textContent.toLowerCase();
             const productCategory = card.closest('.product-category-section')?.id.replace('category-', '') || '';
 
-            if (productName.includes(searchTerm) || productDescription.includes(searchTerm) || productCategory.includes(searchTerm)) {
+            const match = productName.includes(searchTerm) || productDescription.includes(searchTerm) || productCategory.includes(searchTerm);
+
+            if (match) {
+                if (!foundCard) foundCard = card;
                 card.style.display = 'block';
-                card.classList.add('highlight-result'); 
+                card.classList.add('highlight-result');
             } else {
                 card.style.display = 'none';
                 card.classList.remove('highlight-result');
             }
         });
 
-        // If search term is empty, show all products
         if (searchTerm === '') {
             productCards.forEach(card => {
                 card.style.display = 'block';
                 card.classList.remove('highlight-result');
             });
         }
+
+        if (foundCard) {
+            const parentSection = foundCard.closest('.product-category-section');
+            if (parentSection) {
+                showSection(parentSection.id);
+                foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            alert("No se encontraron productos.");
+        }
     }
 
-    // Handle browser's back/forward buttons
     window.addEventListener('popstate', (event) => {
         if (event.state && event.state.section) {
-            showSection(event.state.section, false); // Don't push state again
+            showSection(event.state.section, false);
         } else {
-            // If no specific state, default to showing the main catalog
             showSection('nuestro-catalogo', false);
         }
     });
 
-    // Initial content load
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('view-details-link')) {
+            event.preventDefault();
+            const productId = event.target.dataset.productId;
+            const product = allProducts.find(p => p.id === productId);
+
+            if (product) {
+                modalProductImage.src = product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto';
+                modalProductImage.alt = product.nombre;
+                modalProductName.textContent = product.nombre;
+                modalProductDescription.textContent = product.descripcion;
+                modalProductPrice.textContent = `$${product.precio.toFixed(2)}`;
+                productDetailModal.classList.add('show');
+            }
+        }
+    });
+
+    if (closeProductDetailModal) {
+        closeProductDetailModal.addEventListener('click', () => {
+            productDetailModal.classList.remove('show');
+        });
+    }
+
+    if (productDetailModal) {
+        productDetailModal.addEventListener('click', (event) => {
+            if (event.target === productDetailModal) {
+                productDetailModal.classList.remove('show');
+            }
+        });
+    }
+
     cargarContenido();
 });
+
