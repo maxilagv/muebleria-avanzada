@@ -321,7 +321,6 @@
             transition: all 0.3s ease-in-out;
         }
 
-        /* Estilos para el mini panel de categorías */
         .category-dropdown {
             position: relative;
             display: inline-block;
@@ -335,8 +334,8 @@
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
             border-radius: 0.5rem;
-            overflow: hidden; /* Para que el borde redondeado se aplique a los hijos */
-            top: 100%; /* Posicionar debajo del botón */
+            overflow: hidden;
+            top: 100%; 
             left: 0;
         }
 
@@ -356,11 +355,10 @@
             display: block;
         }
 
-        .category-dropdown-content.active { /* Para activar con JS */
+        .category-dropdown-content.active { 
             display: block;
         }
 
-        /* Estilos para el botón de volver */
         .back-to-catalog-btn {
             background-color: #6d5b4f;
             color: #ffffff;
@@ -372,14 +370,130 @@
             transition-property: opacity;
             transition-duration: 300ms;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            margin-top: 1.5rem; /* Espacio superior */
-            display: inline-block; /* Para centrarlo si es necesario o aplicar margen */
+            margin-top: 1.5rem; 
+            display: inline-block; 
             text-align: center;
         }
 
         .back-to-catalog-btn:hover {
             opacity: 0.9;
         }
+
+        
+        .product-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .product-detail-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .product-detail-modal-content {
+            background-color: #f8f5ee;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            color: #3a3a3a;
+            text-align: center;
+        }
+
+        .product-detail-modal-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-detail-modal-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #6d5b4f;
+        }
+
+        .product-detail-modal-content p {
+            font-size: 1.125rem;
+            color: #5a6a7a;
+            margin-bottom: 1rem;
+        }
+
+        .product-detail-modal-content .price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #6d5b4f;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-detail-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #3a3a3a;
+            cursor: pointer;
+        }
+
+        
+        .whatsapp-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25D366; 
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+        }
+
+        
+        #message-box {
+            position: fixed;
+            bottom: 40px; 
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; 
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1001; 
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            text-align: center;
+            min-width: 250px;
+        }
+        #message-box.bg-red-500 {
+            background-color: #F44336; }
     </style>
 </head>
 <body class="c1">
@@ -400,7 +514,8 @@
                 <div class="category-dropdown">
                     <a href="#" class="c18 c5 py-2" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-1 text-xs"></i></a>
                     <div class="category-dropdown-content" id="dynamic-category-nav">
-                        </div>
+                        <a href="#" class="c18 c5 py-2 nav-category-link" data-category="all">Ver Todos los Productos</a>
+                    </div>
                 </div>
                 
                 <a href="#contacto" class="c18 c5 py-2">Contacto</a>
@@ -426,12 +541,11 @@
                 </button>
             </div>
             <div id="catalog-container" class="c27">
-                
             </div>
         </section>
 
         <div id="dynamic-product-sections">
-            </div>
+        </div>
        
         <section id="contacto" class="c36 c2">
             <h3 class="c26 c3">Contáctanos</h3>
@@ -441,8 +555,9 @@
             <div class="c38 c3">
                 <p class="c39">Email: <a href="mailto:info@muebleselegancia.com" class="c5">maxilavagetto@gmail.com</a></p>
                 <p class="c39">Teléfono: <a href="tel:+541123456789" class="c5">+54 11 3772-5766 </a></p>
-                <p>Dirección: triunvirato esquina Juan B justo</p>
+                <p>sede principal: av triunvirato 2800 esquina Juan b justo quilmes oeste</p>
                 <p> redes sociales: <a href="https://www.instagram.com/respaldo.sommier.luciano?utm_source=qr&igsh=MWcxNmRpcGI0MW5tdA=="> instagram</p>
+                    <p>horario de atencion al cliente: 10:30 a 13:30 y 16:00 a 19:00</p>
             </div>
         </section>
     </main>
@@ -463,5 +578,20 @@
             </div>
         </div>
     </footer>
+    <div id="product-detail-modal" class="product-detail-modal">
+        <div class="product-detail-modal-content">
+            <button class="product-detail-modal-close" id="close-product-detail-modal">&times;</button>
+            <img id="modal-product-image" src="" alt="Imagen del Producto">
+            <h3 id="modal-product-name"></h3>
+            <p id="modal-product-description"></p>
+            <p class="price" id="modal-product-price"></p>
+        </div>
+    </div>
+    <a href="https://wa.me/5491151100603" class="whatsapp-button" target="_blank" aria-label="Chatear por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <div id="message-box" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-500 text-white p-3 rounded-md shadow-lg z-50 transition-opacity duration-300 opacity-0 invisible">
+    </div>
 </body>
 </html>
+
