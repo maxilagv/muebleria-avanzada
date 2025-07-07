@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalProductDescription = document.getElementById('modal-product-description');
     const modalProductPrice = document.getElementById('modal-product-price');
 
+    // Referencia al nuevo cuadro de mensajes
+    const messageBox = document.getElementById('message-box');
+
     let allProducts = [];
 
     if (menuToggle && navMenu) {
@@ -41,76 +44,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Muestra una sección específica de la página y actualiza el historial del navegador.
+     * @param {string} sectionId - El ID de la sección a mostrar.
+     * @param {boolean} pushState - Si se debe agregar al historial del navegador (por defecto true).
+     */
     function showSection(sectionId, pushState = true) {
         const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
-            if (section.id === sectionId) {
-                section.style.display = 'block';
-                section.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                section.style.display = 'none';
-            }
+            section.style.display = 'none'; // Oculta todas las secciones primero
         });
+
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
 
         if (pushState) {
             history.pushState({ section: sectionId }, '', `#${sectionId}`);
         }
     }
 
-    function showAllProducts(pushState = true) {
-        const allCategorySections = document.querySelectorAll('.product-category-section');
-        allCategorySections.forEach(section => {
-            section.style.display = 'none';
+    /**
+     * Muestra la sección principal del catálogo y todas las secciones de productos por categoría.
+     * Esto es útil para la opción "Ver Todos los Productos".
+     */
+    function showAllProducts() {
+        const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
+        allSections.forEach(section => {
+            section.style.display = 'none'; // Oculta todas las secciones primero
         });
 
-        catalogContainer.innerHTML = '';
-        dynamicProductSections.innerHTML = '';
-
-        const productsByCategory = {};
-        allProducts.forEach(productData => {
-            const categoryName = productData.categoria.toLowerCase();
-            if (!productsByCategory[categoryName]) {
-                productsByCategory[categoryName] = [];
-            }
-            productsByCategory[categoryName].push(productData);
-        });
-
-        for (const categoryName in productsByCategory) {
-            const categorySection = document.createElement('section');
-            categorySection.id = `category-${categoryName}`;
-            categorySection.className = 'c25 c4 product-category-section';
-            categorySection.innerHTML = `
-                <h3 class="c26 c3">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
-                <div class="c27 product-grid"></div>
-            `;
-            const productGrid = categorySection.querySelector('.product-grid');
-
-            productsByCategory[categoryName].forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'c28 product-card';
-                productCard.dataset.productId = product.id;
-                productCard.innerHTML = `
-                    <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="c29">
-                    <h4 class="c30 c3">${product.nombre}</h4>
-                    <p class="c31">${product.descripcion}</p>
-                    <p class="c32 c3">$${product.precio.toFixed(2)}</p>
-                    <a href="#" class="c32 c3 c5 view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
-                `;
-                productGrid.appendChild(productCard);
-            });
-            dynamicProductSections.appendChild(categorySection);
-            categorySection.style.display = 'block';
+        // Muestra la sección principal del catálogo
+        const catalogSection = document.getElementById('nuestro-catalogo');
+        if (catalogSection) {
+            catalogSection.style.display = 'block';
         }
 
-        showSection('nuestro-catalogo', pushState);
+        // Muestra todas las secciones de productos por categoría
+        document.querySelectorAll('.product-category-section').forEach(section => {
+            section.style.display = 'block';
+        });
+
+        // Actualiza el historial del navegador
+        history.pushState({ section: 'nuestro-catalogo' }, '', `#nuestro-catalogo`);
     }
 
+    /**
+     * Muestra un mensaje flotante en la parte inferior de la pantalla.
+     * @param {string} message - El texto del mensaje.
+     * @param {string} type - El tipo de mensaje ('info' o 'error').
+     */
+    function showMessage(message, type = 'info') {
+        if (messageBox) {
+            messageBox.textContent = message;
+            // Reinicia las clases de color para aplicar la correcta
+            messageBox.classList.remove('bg-red-500', 'bg-blue-500'); 
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else {
+                messageBox.classList.add('bg-blue-500'); // Color por defecto para info
+            }
+            messageBox.classList.remove('opacity-0', 'invisible');
+            messageBox.classList.add('opacity-100', 'visible');
+
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100', 'visible');
+                messageBox.classList.add('opacity-0', 'invisible');
+            }, 3000); // El mensaje desaparece después de 3 segundos
+        }
+    }
+
+    /**
+     * Carga el contenido de las categorías y productos desde Firestore y los renderiza en la página.
+     */
     async function cargarContenido() {
         catalogContainer.innerHTML = '';
         dynamicProductSections.innerHTML = '';
         dynamicCategoryNav.innerHTML = '';
         allProducts = [];
 
+        // Escucha cambios en la colección de categorías
         onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
             catalogContainer.innerHTML = '';
             dynamicCategoryNav.innerHTML = '';
@@ -120,8 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 categories.push({ id: doc.id, ...doc.data() });
             });
 
+            // Ordena las categorías alfabéticamente
             categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
+            // Crea el enlace "Ver Todos los Productos" en el menú de navegación
             const viewAllLink = document.createElement('a');
             viewAllLink.href = `#`;
             viewAllLink.className = 'c18 c5 py-2 nav-category-link';
@@ -129,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             viewAllLink.textContent = 'Ver Todos los Productos';
             dynamicCategoryNav.appendChild(viewAllLink);
 
+            // Renderiza las tarjetas de categoría y los enlaces de navegación por categoría
             categories.forEach(category => {
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'c28 category-card';
@@ -149,13 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 dynamicCategoryNav.appendChild(navLink);
             });
 
+            // Escucha cambios en la colección de muebles (productos)
             onSnapshot(collection(db, "muebles"), (productSnapshot) => {
-                dynamicProductSections.innerHTML = '';
+                dynamicProductSections.innerHTML = ''; // Limpia las secciones de productos existentes
 
                 const productsByCategory = {};
+                allProducts = []; // Reinicia allProducts para la búsqueda
                 productSnapshot.forEach(doc => {
                     const productData = { id: doc.id, ...doc.data() };
-                    allProducts.push(productData);
+                    allProducts.push(productData); // Almacena todos los productos para la búsqueda
                     const categoryName = productData.categoria.toLowerCase();
                     if (!productsByCategory[categoryName]) {
                         productsByCategory[categoryName] = [];
@@ -163,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     productsByCategory[categoryName].push(productData);
                 });
 
+                // Renderiza las secciones de productos por categoría
                 for (const categoryName in productsByCategory) {
                     const categorySection = document.createElement('section');
                     categorySection.id = `category-${categoryName}`;
@@ -189,8 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     dynamicProductSections.appendChild(categorySection);
                 }
 
+                // Muestra la sección del catálogo principal por defecto al cargar el contenido
                 showSection('nuestro-catalogo', false);
 
+                // Configura los eventos de búsqueda después de cargar los productos
                 if (searchButton && searchInput) {
                     searchButton.addEventListener('click', () => performSearch());
                     searchInput.addEventListener('keypress', (event) => {
@@ -201,18 +224,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Maneja los clics en los enlaces de navegación y categorías
     document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('view-category') || event.target.classList.contains('nav-category-link')) {
+        const link = event.target.closest('a');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+
+        if (href && href.startsWith('#')) {
             event.preventDefault();
-            const category = event.target.dataset.category;
-            if (category === 'all') {
-                showAllProducts();
-            } else {
-                showSection(`category-${category}`);
+            const sectionId = href.replace('#', '');
+
+            if (sectionId === 'inicio') {
+                cargarContenido(); // Recarga el contenido para asegurar el estado inicial
+            } else if (sectionId === 'nuestro-catalogo' || sectionId === 'contacto') {
+                showSection(sectionId);
+            } else if (link.classList.contains('nav-category-link')) {
+                const category = link.dataset.category;
+                if (category === 'all') {
+                    showAllProducts(); // Llama a la nueva función para mostrar todos los productos
+                } else {
+                    showSection(`category-${category}`);
+                }
             }
         }
     });
 
+    // Evento para el enlace "Nuestro Catálogo" en el menú principal
     if (catalogLink) {
         catalogLink.addEventListener('click', (event) => {
             event.preventDefault();
@@ -220,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Realiza una búsqueda de productos basada en el término de búsqueda.
+     */
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const productCards = document.querySelectorAll('.product-card');
@@ -233,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const match = productName.includes(searchTerm) || productDescription.includes(searchTerm) || productCategory.includes(searchTerm);
 
             if (match) {
-                if (!foundCard) foundCard = card;
+                if (!foundCard) foundCard = card; // Guarda la primera tarjeta encontrada para hacer scroll
                 card.style.display = 'block';
                 card.classList.add('highlight-result');
             } else {
@@ -242,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Si el término de búsqueda está vacío, muestra todas las tarjetas
         if (searchTerm === '') {
             productCards.forEach(card => {
                 card.style.display = 'block';
@@ -249,17 +291,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Si se encontró al menos una tarjeta, desplázate a ella
         if (foundCard) {
             const parentSection = foundCard.closest('.product-category-section');
             if (parentSection) {
-                showSection(parentSection.id);
+                showSection(parentSection.id); // Asegura que la sección de la tarjeta esté visible
                 foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } else {
-            alert("No se encontraron productos.");
+            // Muestra un mensaje si no se encontraron productos
+            showMessage("No se encontraron productos.", 'error');
         }
     }
 
+    // Maneja el botón de retroceso del navegador
     window.addEventListener('popstate', (event) => {
         if (event.state && event.state.section) {
             showSection(event.state.section, false);
@@ -268,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Maneja la apertura del modal de detalles del producto
     document.addEventListener('click', (event) => {
         if (event.target.classList.contains('view-details-link')) {
             event.preventDefault();
@@ -285,12 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Cierra el modal de detalles del producto al hacer clic en la "X"
     if (closeProductDetailModal) {
         closeProductDetailModal.addEventListener('click', () => {
             productDetailModal.classList.remove('show');
         });
     }
 
+    // Cierra el modal de detalles del producto al hacer clic fuera de él
     if (productDetailModal) {
         productDetailModal.addEventListener('click', (event) => {
             if (event.target === productDetailModal) {
@@ -299,6 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Carga el contenido inicial al cargar la página
     cargarContenido();
 });
-
