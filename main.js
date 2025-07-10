@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalProductDescription = document.getElementById('modal-product-description');
     const modalProductPrice = document.getElementById('modal-product-price');
 
-    // Referencia al nuevo cuadro de mensajes
     const messageBox = document.getElementById('message-box');
 
     let allProducts = [];
@@ -112,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 messageBox.classList.remove('opacity-100', 'visible');
                 messageBox.classList.add('opacity-0', 'invisible');
-            }, 3000); // El mensaje desaparece después de 3 segundos
+            }, 3000); 
         }
     }
 
@@ -125,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dynamicCategoryNav.innerHTML = '';
         allProducts = [];
 
-        // Escucha cambios en la colección de categorías
+        
         onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
             catalogContainer.innerHTML = '';
             dynamicCategoryNav.innerHTML = '';
@@ -135,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 categories.push({ id: doc.id, ...doc.data() });
             });
 
-            // Ordena las categorías alfabéticamente
+            
             categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
             // Crea el enlace "Ver Todos los Productos" en el menú de navegación
@@ -236,7 +235,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const sectionId = href.replace('#', '');
 
             if (sectionId === 'inicio') {
-                cargarContenido(); // Recarga el contenido para asegurar el estado inicial
+                // Para la sección de inicio, asegúrate de que solo el contenido de inicio sea visible
+                const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #contacto');
+                allSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById('inicio').style.display = 'block';
+                history.pushState({ section: 'inicio' }, '', '#inicio');
             } else if (sectionId === 'nuestro-catalogo' || sectionId === 'contacto') {
                 showSection(sectionId);
             } else if (link.classList.contains('nav-category-link')) {
@@ -246,6 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     showSection(`category-${category}`);
                 }
+            } else if (link.classList.contains('view-category')) { // Maneja el clic en "Ver [Categoría]" en las tarjetas de categoría
+                const category = link.dataset.category;
+                showSection(`category-${category}`);
             }
         }
     });
@@ -350,3 +358,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carga el contenido inicial al cargar la página
     cargarContenido();
 });
+
