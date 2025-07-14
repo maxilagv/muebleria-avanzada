@@ -2,10 +2,13 @@ import { db } from "./firebaseconfig.js";
 import { collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded event fired. Initializing main.js...");
+
     const menuToggle = document.querySelector('.menu-toggle'); // Usar la clase más descriptiva
     const navMenu = document.getElementById('nav-menu');
     const catalogLink = document.getElementById('catalog-link');
     const catalogSection = document.getElementById('nuestro-catalogo');
+    const catalogContainer = document.getElementById('catalog-container');
     const dynamicProductSections = document.getElementById('dynamic-product-sections');
     const dynamicCategoryNav = document.getElementById('dynamic-category-nav');
     const searchInput = document.getElementById('search-input');
@@ -122,112 +125,159 @@ document.addEventListener('DOMContentLoaded', () => {
      * Carga el contenido de las categorías y productos desde Firestore y los renderiza en la página.
      */
     async function cargarContenido() {
+        console.log("Attempting to load content from Firestore...");
+        console.log("db instance:", db);
+        console.log("catalogContainer element:", catalogContainer);
+        console.log("dynamicProductSections element:", dynamicProductSections);
+        console.log("dynamicCategoryNav element:", dynamicCategoryNav);
+
+
+        // Check if Firestore DB is initialized
+        if (!db) {
+            console.error("Error: Firestore database (db) is not initialized. Check firebaseconfig.js and its import.");
+            showMessage("Error: La conexión a la base de datos no está disponible. Por favor, revisa la consola para más detalles.", 'error');
+            return;
+        }
+
+        // Check if critical DOM elements exist
+        if (!catalogContainer) {
+            console.error("Error: Element with ID 'catalog-container' not found in HTML. Cannot render categories.");
+            showMessage("Error: No se pudo cargar el catálogo. Elemento principal no encontrado en la página.", 'error');
+            return;
+        }
+        if (!dynamicProductSections) {
+            console.error("Error: Element with ID 'dynamic-product-sections' not found in HTML. Cannot render product sections.");
+            showMessage("Error: No se pudieron cargar las secciones de productos. Elemento principal no encontrado en la página.", 'error');
+            return;
+        }
+        if (!dynamicCategoryNav) {
+            console.error("Error: Element with ID 'dynamic-category-nav' not found in HTML. Cannot render category navigation.");
+            showMessage("Error: No se pudo cargar la navegación de categorías. Elemento principal no encontrado en la página.", 'error');
+            return;
+        }
+
         catalogContainer.innerHTML = '';
         dynamicProductSections.innerHTML = '';
         dynamicCategoryNav.innerHTML = '';
         allProducts = [];
 
+        try {
+            onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
+                console.log("Categories snapshot received.");
+                catalogContainer.innerHTML = ''; // Clear existing content
+                dynamicCategoryNav.innerHTML = ''; // Clear existing content
 
-        onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
-            catalogContainer.innerHTML = '';
-            dynamicCategoryNav.innerHTML = '';
-
-            const categories = [];
-            categorySnapshot.forEach(doc => {
-                categories.push({ id: doc.id, ...doc.data() });
-            });
-
-
-            categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            // Crea el enlace "Ver Todos los Productos" en el menú de navegación
-            const viewAllLink = document.createElement('a');
-            viewAllLink.href = `#`;
-            viewAllLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
-            viewAllLink.dataset.category = 'all';
-            viewAllLink.textContent = 'Ver Todos los Productos';
-            dynamicCategoryNav.appendChild(viewAllLink);
-
-            // Renderiza las tarjetas de categoría y los enlaces de navegación por categoría
-            categories.forEach(category => {
-                const categoryCard = document.createElement('div');
-                categoryCard.className = 'card-base category-card'; // Usar clase general de tarjeta
-                categoryCard.dataset.category = category.nombre.toLowerCase();
-                categoryCard.innerHTML = `
-                    <img src="${category.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Categor%C3%ADa'}" alt="${category.nombre}" class="card-image">
-                    <h4 class="product-title text-primary-dark">${category.nombre}</h4>
-                    <p class="product-description">Explora nuestra colección de ${category.nombre.toLowerCase()}.</p>
-                    <a href="#" class="view-details-link view-category" data-category="${category.nombre.toLowerCase()}">Ver ${category.nombre} &rarr;</a>
-                `;
-                catalogContainer.appendChild(categoryCard);
-
-                const navLink = document.createElement('a');
-                navLink.href = `#category-${category.nombre.toLowerCase()}`;
-                navLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
-                navLink.dataset.category = category.nombre.toLowerCase();
-                navLink.textContent = category.nombre;
-                dynamicCategoryNav.appendChild(navLink);
-            });
-
-            // Escucha cambios en la colección de muebles (productos)
-            onSnapshot(collection(db, "muebles"), (productSnapshot) => {
-                dynamicProductSections.innerHTML = ''; // Limpia las secciones de productos existentes
-
-                const productsByCategory = {};
-                allProducts = []; // Reinicia allProducts para la búsqueda
-                productSnapshot.forEach(doc => {
-                    const productData = { id: doc.id, ...doc.data() };
-                    allProducts.push(productData); // Almacena todos los productos para la búsqueda
-                    const categoryName = productData.categoria.toLowerCase();
-                    if (!productsByCategory[categoryName]) {
-                        productsByCategory[categoryName] = [];
-                    }
-                    productsByCategory[categoryName].push(productData);
+                const categories = [];
+                categorySnapshot.forEach(doc => {
+                    categories.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Renderiza las secciones de productos por categoría
-                for (const categoryName in productsByCategory) {
-                    const categorySection = document.createElement('section');
-                    categorySection.id = `category-${categoryName}`;
-                    // Ahora se añade la clase 'product-category-section' para las transiciones
-                    categorySection.className = 'section-padding border-primary-subtle product-category-section fade-in-section';
-                    categorySection.innerHTML = `
-                        <h3 class="section-heading text-primary-dark">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
-                        <div class="product-grid"></div>
+                categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+                // Crea el enlace "Ver Todos los Productos" en el menú de navegación
+                const viewAllLink = document.createElement('a');
+                viewAllLink.href = `#`;
+                viewAllLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
+                viewAllLink.dataset.category = 'all';
+                viewAllLink.textContent = 'Ver Todos los Productos';
+                dynamicCategoryNav.appendChild(viewAllLink);
+
+                // Renderiza las tarjetas de categoría y los enlaces de navegación por categoría
+                categories.forEach(category => {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'card-base category-card'; // Usar clase general de tarjeta
+                    categoryCard.dataset.category = category.nombre.toLowerCase();
+                    categoryCard.innerHTML = `
+                        <img src="${category.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Categor%C3%ADa'}" alt="${category.nombre}" class="card-image">
+                        <h4 class="product-title text-primary-dark">${category.nombre}</h4>
+                        <p class="product-description">Explora nuestra colección de ${category.nombre.toLowerCase()}.</p>
+                        <a href="#" class="view-details-link view-category" data-category="${category.nombre.toLowerCase()}">Ver ${category.nombre} &rarr;</a>
                     `;
-                    const productGrid = categorySection.querySelector('.product-grid');
+                    catalogContainer.appendChild(categoryCard);
 
-                    productsByCategory[categoryName].forEach(product => {
-                        const productCard = document.createElement('div');
-                        productCard.className = 'card-base product-card'; // Usar clase general de tarjeta
-                        productCard.dataset.productId = product.id;
-                        productCard.innerHTML = `
-                            <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="card-image">
-                            <h4 class="product-title text-primary-dark">${product.nombre}</h4>
-                            <p class="product-description">${product.descripcion}</p>
-                            <p class="product-price">$${product.precio.toFixed(2)}</p>
-                            <a href="#" class="view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
-                        `;
-                        productGrid.appendChild(productCard);
+                    const navLink = document.createElement('a');
+                    navLink.href = `#category-${category.nombre.toLowerCase()}`;
+                    navLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
+                    navLink.dataset.category = category.nombre.toLowerCase();
+                    navLink.textContent = category.nombre;
+                    dynamicCategoryNav.appendChild(navLink);
+                });
+
+                // Escucha cambios en la colección de muebles (productos)
+                try {
+                    onSnapshot(collection(db, "muebles"), (productSnapshot) => {
+                        console.log("Products snapshot received.");
+                        dynamicProductSections.innerHTML = ''; // Limpia las secciones de productos existentes
+
+                        const productsByCategory = {};
+                        allProducts = []; // Reinicia allProducts para la búsqueda
+                        productSnapshot.forEach(doc => {
+                            const productData = { id: doc.id, ...doc.data() };
+                            allProducts.push(productData); // Almacena todos los productos para la búsqueda
+                            const categoryName = productData.categoria.toLowerCase();
+                            if (!productsByCategory[categoryName]) {
+                                productsByCategory[categoryName] = [];
+                            }
+                            productsByCategory[categoryName].push(productData);
+                        });
+
+                        // Renderiza las secciones de productos por categoría
+                        for (const categoryName in productsByCategory) {
+                            const categorySection = document.createElement('section');
+                            categorySection.id = `category-${categoryName}`;
+                            // Ahora se añade la clase 'product-category-section' para las transiciones
+                            categorySection.className = 'section-padding border-primary-subtle product-category-section fade-in-section';
+                            categorySection.innerHTML = `
+                                <h3 class="section-heading text-primary-dark">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
+                                <div class="product-grid"></div>
+                            `;
+                            const productGrid = categorySection.querySelector('.product-grid');
+
+                            productsByCategory[categoryName].forEach(product => {
+                                const productCard = document.createElement('div');
+                                productCard.className = 'card-base product-card'; // Usar clase general de tarjeta
+                                productCard.dataset.productId = product.id;
+                                productCard.innerHTML = `
+                                    <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="card-image">
+                                    <h4 class="product-title text-primary-dark">${product.nombre}</h4>
+                                    <p class="product-description">${product.descripcion}</p>
+                                    <p class="product-price">$${product.precio.toFixed(2)}</p>
+                                    <a href="#" class="view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
+                                `;
+                                productGrid.appendChild(productCard);
+                            });
+                            dynamicProductSections.appendChild(categorySection);
+                        }
+
+                        // Muestra la sección del catálogo principal por defecto al cargar el contenido
+                        showSection('nuestro-catalogo', false);
+
+                        // Configura los eventos de búsqueda después de cargar los productos
+                        if (searchButton && searchInput) {
+                            searchButton.addEventListener('click', () => performSearch());
+                            searchInput.addEventListener('keypress', (event) => {
+                                if (event.key === 'Enter') performSearch();
+                            });
+                        }
+
+                        // Inicializa el Intersection Observer después de que las secciones se hayan cargado
+                        setupIntersectionObserver();
+                    }, (error) => {
+                        console.error("Error al obtener productos de Firestore:", error);
+                        showMessage("Error al cargar los productos. Por favor, revisa la consola para más detalles.", 'error');
                     });
-                    dynamicProductSections.appendChild(categorySection);
+                } catch (error) {
+                    console.error("Error al configurar el listener de productos (Firestore):", error);
+                    showMessage("Error al cargar los productos. Por favor, revisa la consola para más detalles.", 'error');
                 }
-
-                // Muestra la sección del catálogo principal por defecto al cargar el contenido
-                showSection('nuestro-catalogo', false);
-
-                // Configura los eventos de búsqueda después de cargar los productos
-                if (searchButton && searchInput) {
-                    searchButton.addEventListener('click', () => performSearch());
-                    searchInput.addEventListener('keypress', (event) => {
-                        if (event.key === 'Enter') performSearch();
-                    });
-                }
-
-                // Inicializa el Intersection Observer después de que las secciones se hayan cargado
-                setupIntersectionObserver();
+            }, (error) => {
+                console.error("Error al obtener categorías de Firestore:", error);
+                showMessage("Error al cargar las categorías. Por favor, revisa la consola para más detalles.", 'error');
             });
-        });
+        } catch (error) {
+            console.error("Error al configurar el listener de categorías (Firestore):", error);
+            showMessage("Error al cargar las categorías. Por favor, revisa la consola para más detalles.", 'error');
+        }
     }
 
     // Maneja los clics en los enlaces de navegación y categorías
@@ -404,5 +454,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carga el contenido inicial al cargar la página
     cargarContenido();
 });
-
-
