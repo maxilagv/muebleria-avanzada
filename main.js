@@ -2,11 +2,10 @@ import { db } from "./firebaseconfig.js";
 import { collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.c7');
+    const menuToggle = document.querySelector('.menu-toggle'); // Usar la clase más descriptiva
     const navMenu = document.getElementById('nav-menu');
     const catalogLink = document.getElementById('catalog-link');
     const catalogSection = document.getElementById('nuestro-catalogo');
-    const catalogContainer = document.getElementById('catalog-container');
     const dynamicProductSections = document.getElementById('dynamic-product-sections');
     const dynamicCategoryNav = document.getElementById('dynamic-category-nav');
     const searchInput = document.getElementById('search-input');
@@ -23,17 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allProducts = [];
 
+    // --- Funcionalidad del menú de hamburguesa ---
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
         });
 
+        // Cierra el menú si se hace clic fuera de él
         document.addEventListener('click', (event) => {
             if (!navMenu.contains(event.target) && !menuToggle.contains(event.target)) {
                 navMenu.classList.remove('active');
             }
         });
 
+        // Cierra el menú al hacer clic en un enlace (para navegación móvil)
         navMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 if (navMenu.classList.contains('active')) {
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (messageBox) {
             messageBox.textContent = message;
             // Reinicia las clases de color para aplicar la correcta
-            messageBox.classList.remove('bg-red-500', 'bg-blue-500'); 
+            messageBox.classList.remove('bg-red-500', 'bg-blue-500');
             if (type === 'error') {
                 messageBox.classList.add('bg-red-500');
             } else {
@@ -112,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 messageBox.classList.remove('opacity-100', 'visible');
                 messageBox.classList.add('opacity-0', 'invisible');
-            }, 3000); 
+            }, 3000);
         }
     }
 
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dynamicCategoryNav.innerHTML = '';
         allProducts = [];
 
-        
+
         onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
             catalogContainer.innerHTML = '';
             dynamicCategoryNav.innerHTML = '';
@@ -135,13 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 categories.push({ id: doc.id, ...doc.data() });
             });
 
-            
+
             categories.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
             // Crea el enlace "Ver Todos los Productos" en el menú de navegación
             const viewAllLink = document.createElement('a');
             viewAllLink.href = `#`;
-            viewAllLink.className = 'c18 c5 py-2 nav-category-link';
+            viewAllLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
             viewAllLink.dataset.category = 'all';
             viewAllLink.textContent = 'Ver Todos los Productos';
             dynamicCategoryNav.appendChild(viewAllLink);
@@ -149,19 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Renderiza las tarjetas de categoría y los enlaces de navegación por categoría
             categories.forEach(category => {
                 const categoryCard = document.createElement('div');
-                categoryCard.className = 'c28 category-card';
+                categoryCard.className = 'card-base category-card'; // Usar clase general de tarjeta
                 categoryCard.dataset.category = category.nombre.toLowerCase();
                 categoryCard.innerHTML = `
-                    <img src="${category.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Categor%C3%ADa'}" alt="${category.nombre}" class="c29">
-                    <h4 class="c30 c3">${category.nombre}</h4>
-                    <p class="c31">Explora nuestra colección de ${category.nombre.toLowerCase()}.</p>
-                    <a href="#" class="c32 c3 c5 view-category" data-category="${category.nombre.toLowerCase()}">Ver ${category.nombre} &rarr;</a>
+                    <img src="${category.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Categor%C3%ADa'}" alt="${category.nombre}" class="card-image">
+                    <h4 class="product-title text-primary-dark">${category.nombre}</h4>
+                    <p class="product-description">Explora nuestra colección de ${category.nombre.toLowerCase()}.</p>
+                    <a href="#" class="view-details-link view-category" data-category="${category.nombre.toLowerCase()}">Ver ${category.nombre} &rarr;</a>
                 `;
                 catalogContainer.appendChild(categoryCard);
 
                 const navLink = document.createElement('a');
                 navLink.href = `#category-${category.nombre.toLowerCase()}`;
-                navLink.className = 'c18 c5 py-2 nav-category-link';
+                navLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
                 navLink.dataset.category = category.nombre.toLowerCase();
                 navLink.textContent = category.nombre;
                 dynamicCategoryNav.appendChild(navLink);
@@ -188,23 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     const categorySection = document.createElement('section');
                     categorySection.id = `category-${categoryName}`;
                     // Ahora se añade la clase 'product-category-section' para las transiciones
-                    categorySection.className = 'c25 c4 product-category-section'; 
+                    categorySection.className = 'section-padding border-primary-subtle product-category-section fade-in-section';
                     categorySection.innerHTML = `
-                        <h3 class="c26 c3">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
-                        <div class="c27 product-grid"></div>
+                        <h3 class="section-heading text-primary-dark">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
+                        <div class="product-grid"></div>
                     `;
                     const productGrid = categorySection.querySelector('.product-grid');
 
                     productsByCategory[categoryName].forEach(product => {
                         const productCard = document.createElement('div');
-                        productCard.className = 'c28 product-card';
+                        productCard.className = 'card-base product-card'; // Usar clase general de tarjeta
                         productCard.dataset.productId = product.id;
                         productCard.innerHTML = `
-                            <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="c29">
-                            <h4 class="c30 c3">${product.nombre}</h4>
-                            <p class="c31">${product.descripcion}</p>
-                            <p class="c32 c3">$${product.precio.toFixed(2)}</p>
-                            <a href="#" class="c32 c3 c5 view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
+                            <img src="${product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto'}" alt="${product.nombre}" class="card-image">
+                            <h4 class="product-title text-primary-dark">${product.nombre}</h4>
+                            <p class="product-description">${product.descripcion}</p>
+                            <p class="product-price">$${product.precio.toFixed(2)}</p>
+                            <a href="#" class="view-details-link" data-product-id="${product.id}">Ver detalles &rarr;</a>
                         `;
                         productGrid.appendChild(productCard);
                     });
@@ -221,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (event.key === 'Enter') performSearch();
                     });
                 }
+
+                // Inicializa el Intersection Observer después de que las secciones se hayan cargado
+                setupIntersectionObserver();
             });
         });
     }
@@ -317,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const parentSection = foundCard.closest('.product-category-section');
             if (parentSection) {
                 // Asegura que la sección de la tarjeta esté visible y actívala
-                showSection(parentSection.id); 
+                showSection(parentSection.id);
                 foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } else {
@@ -368,6 +373,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    /**
+     * Configura el Intersection Observer para animar secciones al hacer scroll.
+     */
+    function setupIntersectionObserver() {
+        const fadeSections = document.querySelectorAll('.fade-in-section');
+
+        const observerOptions = {
+            root: null, // viewport
+            rootMargin: '0px',
+            threshold: 0.1 // 10% de la sección visible para activar
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // Dejar de observar una vez que es visible
+                }
+            });
+        }, observerOptions);
+
+        fadeSections.forEach(section => {
+            observer.observe(section);
+        });
+    }
+
 
     // Carga el contenido inicial al cargar la página
     cargarContenido();
