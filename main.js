@@ -45,18 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Muestra una sección específica de la página y actualiza el historial del navegador.
+     * Ahora utiliza clases 'active' para controlar la visibilidad y las transiciones CSS.
      * @param {string} sectionId - El ID de la sección a mostrar.
      * @param {boolean} pushState - Si se debe agregar al historial del navegador (por defecto true).
      */
     function showSection(sectionId, pushState = true) {
         const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
-            section.style.display = 'none'; // Oculta todas las secciones primero
+            section.classList.remove('active'); // Elimina la clase 'active' de todas las secciones
         });
 
         const targetSection = document.getElementById(sectionId);
         if (targetSection) {
-            targetSection.style.display = 'block';
+            targetSection.classList.add('active'); // Añade la clase 'active' a la sección objetivo
             targetSection.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -67,23 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Muestra la sección principal del catálogo y todas las secciones de productos por categoría.
-     * Esto es útil para la opción "Ver Todos los Productos".
+     * Ahora utiliza clases 'active' para controlar la visibilidad y las transiciones CSS.
      */
     function showAllProducts() {
         const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
-            section.style.display = 'none'; // Oculta todas las secciones primero
+            section.classList.remove('active'); // Elimina la clase 'active' de todas las secciones
         });
 
         // Muestra la sección principal del catálogo
         const catalogSection = document.getElementById('nuestro-catalogo');
         if (catalogSection) {
-            catalogSection.style.display = 'block';
+            catalogSection.classList.add('active');
         }
 
         // Muestra todas las secciones de productos por categoría
         document.querySelectorAll('.product-category-section').forEach(section => {
-            section.style.display = 'block';
+            section.classList.add('active'); // Añade la clase 'active' a todas las secciones de categoría
         });
 
         // Actualiza el historial del navegador
@@ -186,7 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (const categoryName in productsByCategory) {
                     const categorySection = document.createElement('section');
                     categorySection.id = `category-${categoryName}`;
-                    categorySection.className = 'c25 c4 product-category-section';
+                    // Ahora se añade la clase 'product-category-section' para las transiciones
+                    categorySection.className = 'c25 c4 product-category-section'; 
                     categorySection.innerHTML = `
                         <h3 class="c26 c3">Nuestros ${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
                         <div class="c27 product-grid"></div>
@@ -238,10 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Para la sección de inicio, asegúrate de que solo el contenido de inicio sea visible
                 const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #contacto');
                 allSections.forEach(section => {
-                    section.style.display = 'none';
+                    section.classList.remove('active');
                 });
-                document.getElementById('inicio').style.display = 'block';
-                history.pushState({ section: 'inicio' }, '', '#inicio');
+                document.getElementById('inicio').classList.add('active'); // Usa active para inicio
+                history.pushState({ section: 'inicio' }, '', `#inicio`);
             } else if (sectionId === 'nuestro-catalogo' || sectionId === 'contacto') {
                 showSection(sectionId);
             } else if (link.classList.contains('nav-category-link')) {
@@ -274,6 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const productCards = document.querySelectorAll('.product-card');
         let foundCard = null;
 
+        // Ocultar todas las secciones de productos y mostrar solo el catálogo general para la búsqueda
+        document.querySelectorAll('.product-category-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById('nuestro-catalogo').classList.add('active');
+
+
         productCards.forEach(card => {
             const productName = card.querySelector('h4').textContent.toLowerCase();
             const productDescription = card.querySelector('p').textContent.toLowerCase();
@@ -283,10 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (match) {
                 if (!foundCard) foundCard = card; // Guarda la primera tarjeta encontrada para hacer scroll
-                card.style.display = 'block';
+                card.style.display = 'block'; // Muestra la tarjeta si coincide
                 card.classList.add('highlight-result');
             } else {
-                card.style.display = 'none';
+                card.style.display = 'none'; // Oculta la tarjeta si no coincide
                 card.classList.remove('highlight-result');
             }
         });
@@ -297,13 +306,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.display = 'block';
                 card.classList.remove('highlight-result');
             });
+            // Asegúrate de que todas las secciones de categoría estén activas si no hay búsqueda
+            document.querySelectorAll('.product-category-section').forEach(section => {
+                section.classList.add('active');
+            });
         }
 
         // Si se encontró al menos una tarjeta, desplázate a ella
         if (foundCard) {
             const parentSection = foundCard.closest('.product-category-section');
             if (parentSection) {
-                showSection(parentSection.id); // Asegura que la sección de la tarjeta esté visible
+                // Asegura que la sección de la tarjeta esté visible y actívala
+                showSection(parentSection.id); 
                 foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } else {
@@ -358,4 +372,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carga el contenido inicial al cargar la página
     cargarContenido();
 });
+
 
