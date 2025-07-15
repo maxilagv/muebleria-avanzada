@@ -1,29 +1,50 @@
 import { db } from "./firebaseconfig.js";
 import { collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+let allProducts = []; // allProducts sí se mantiene como variable global
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded event fired. Initializing main.js...");
 
-    const menuToggle = document.querySelector('.menu-toggle'); // Usar la clase más descriptiva
+    // Declarar las variables de los elementos del DOM.
+    // Se asignarán valores aquí para el ámbito del DOMContentLoaded y para funciones que los usen directamente.
+    const menuToggle = document.querySelector('.menu-toggle');
+    console.log("menuToggle (DOMContentLoaded):", menuToggle);
     const navMenu = document.getElementById('nav-menu');
+    console.log("navMenu (DOMContentLoaded):", navMenu);
     const catalogLink = document.getElementById('catalog-link');
+    console.log("catalogLink (DOMContentLoaded):", catalogLink);
+    const contactLink = document.getElementById('contact-link');
+    console.log("contactLink (DOMContentLoaded):", contactLink);
     const catalogSection = document.getElementById('nuestro-catalogo');
-    const catalogContainer = document.getElementById('catalog-container');
+    console.log("catalogSection (DOMContentLoaded):", catalogSection);
+    const contactSection = document.getElementById('contacto');
+    console.log("contactSection (DOMContentLoaded):", contactSection);
     const dynamicProductSections = document.getElementById('dynamic-product-sections');
+    console.log("dynamicProductSections (DOMContentLoaded):", dynamicProductSections);
     const dynamicCategoryNav = document.getElementById('dynamic-category-nav');
+    console.log("dynamicCategoryNav (DOMContentLoaded):", dynamicCategoryNav);
     const searchInput = document.getElementById('search-input');
+    console.log("searchInput (DOMContentLoaded):", searchInput);
     const searchButton = document.getElementById('search-button');
+    console.log("searchButton (DOMContentLoaded):", searchButton);
 
     const productDetailModal = document.getElementById('product-detail-modal');
+    console.log("productDetailModal (DOMContentLoaded):", productDetailModal);
     const closeProductDetailModal = document.getElementById('close-product-detail-modal');
+    console.log("closeProductDetailModal (DOMContentLoaded):", closeProductDetailModal);
     const modalProductImage = document.getElementById('modal-product-image');
+    console.log("modalProductImage (DOMContentLoaded):", modalProductImage);
     const modalProductName = document.getElementById('modal-product-name');
+    console.log("modalProductName (DOMContentLoaded):", modalProductName);
     const modalProductDescription = document.getElementById('modal-product-description');
+    console.log("modalProductDescription (DOMContentLoaded):", modalProductDescription);
     const modalProductPrice = document.getElementById('modal-product-price');
+    console.log("modalProductPrice (DOMContentLoaded):", modalProductPrice);
 
     const messageBox = document.getElementById('message-box');
+    console.log("messageBox (DOMContentLoaded):", messageBox);
 
-    let allProducts = [];
 
     // --- Funcionalidad del menú de hamburguesa ---
     if (menuToggle && navMenu) {
@@ -50,20 +71,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Muestra una sección específica de la página y actualiza el historial del navegador.
-     * Ahora utiliza clases 'active' para controlar la visibilidad y las transiciones CSS.
+     * Ahora utiliza clases 'active' para controlar la visibilidad y las transiciones CSS,
+     * y 'display: none' para ocultar completamente las secciones no activas.
      * @param {string} sectionId - El ID de la sección a mostrar.
      * @param {boolean} pushState - Si se debe agregar al historial del navegador (por defecto true).
      */
     function showSection(sectionId, pushState = true) {
         const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
-            section.classList.remove('active'); // Elimina la clase 'active' de todas las secciones
+            section.classList.remove('active');
+            section.style.display = 'none'; // Oculta explícitamente todas las secciones
         });
 
         const targetSection = document.getElementById(sectionId);
         if (targetSection) {
-            targetSection.classList.add('active'); // Añade la clase 'active' a la sección objetivo
+            targetSection.style.display = 'block'; // Muestra la sección objetivo
+            targetSection.classList.add('active'); // Activa las transiciones CSS
             targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Lógica específica para la sección de contacto: solo visible en Inicio o Contacto
+        if (contactSection) { // Asegúrate de que contactSection esté definido
+            if (sectionId === 'inicio' || sectionId === 'contacto') {
+                contactSection.style.display = 'block';
+                contactSection.classList.add('active');
+            } else {
+                contactSection.style.display = 'none';
+                contactSection.classList.remove('active');
+            }
         }
 
         if (pushState) {
@@ -73,23 +108,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Muestra la sección principal del catálogo y todas las secciones de productos por categoría.
-     * Ahora utiliza clases 'active' para controlar la visibilidad y las transiciones CSS.
+     * Oculta la sección de contacto.
      */
     function showAllProducts() {
         const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto');
         allSections.forEach(section => {
-            section.classList.remove('active'); // Elimina la clase 'active' de todas las secciones
+            section.classList.remove('active');
+            section.style.display = 'none'; // Oculta todas las secciones
         });
+
+        // Oculta la sección de contacto explícitamente
+        if (contactSection) { // Asegúrate de que contactSection esté definido
+            contactSection.style.display = 'none';
+            contactSection.classList.remove('active');
+        }
 
         // Muestra la sección principal del catálogo
         const catalogSection = document.getElementById('nuestro-catalogo');
         if (catalogSection) {
+            catalogSection.style.display = 'block';
             catalogSection.classList.add('active');
         }
 
         // Muestra todas las secciones de productos por categoría
         document.querySelectorAll('.product-category-section').forEach(section => {
-            section.classList.add('active'); // Añade la clase 'active' a todas las secciones de categoría
+            section.style.display = 'block';
+            section.classList.add('active');
         });
 
         // Actualiza el historial del navegador
@@ -127,9 +171,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function cargarContenido() {
         console.log("Attempting to load content from Firestore...");
         console.log("db instance:", db);
-        console.log("catalogContainer element:", catalogContainer);
-        console.log("dynamicProductSections element:", dynamicProductSections);
-        console.log("dynamicCategoryNav element:", dynamicCategoryNav);
+
+        // Obtener los elementos del DOM justo antes de usarlos en esta función
+        const currentCatalogContainer = document.getElementById('catalog-container');
+        const currentDynamicProductSections = document.getElementById('dynamic-product-sections');
+        const currentDynamicCategoryNav = document.getElementById('dynamic-category-nav');
+
+        console.log("catalogContainer element (inside cargarContenido, after re-fetch):", currentCatalogContainer);
+        console.log("dynamicProductSections element (inside cargarContenido, after re-fetch):", currentDynamicProductSections);
+        console.log("dynamicCategoryNav element (inside cargarContenido, after re-fetch):", currentDynamicCategoryNav);
 
 
         // Check if Firestore DB is initialized
@@ -140,32 +190,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Check if critical DOM elements exist
-        if (!catalogContainer) {
-            console.error("Error: Element with ID 'catalog-container' not found in HTML. Cannot render categories.");
+        if (!currentCatalogContainer) {
+            console.error("Error: 'catalog-container' not found in HTML. Cannot render categories.");
             showMessage("Error: No se pudo cargar el catálogo. Elemento principal no encontrado en la página.", 'error');
             return;
         }
-        if (!dynamicProductSections) {
-            console.error("Error: Element with ID 'dynamic-product-sections' not found in HTML. Cannot render product sections.");
+        if (!currentDynamicProductSections) {
+            console.error("Error: 'dynamic-product-sections' not found in HTML. Cannot render product sections.");
             showMessage("Error: No se pudieron cargar las secciones de productos. Elemento principal no encontrado en la página.", 'error');
             return;
         }
-        if (!dynamicCategoryNav) {
-            console.error("Error: Element with ID 'dynamic-category-nav' not found in HTML. Cannot render category navigation.");
+        if (!currentDynamicCategoryNav) {
+            console.error("Error: 'dynamic-category-nav' not found in HTML. Cannot render category navigation.");
             showMessage("Error: No se pudo cargar la navegación de categorías. Elemento principal no encontrado en la página.", 'error');
             return;
         }
 
-        catalogContainer.innerHTML = '';
-        dynamicProductSections.innerHTML = '';
-        dynamicCategoryNav.innerHTML = '';
+        currentCatalogContainer.innerHTML = '';
+        currentDynamicProductSections.innerHTML = '';
+        currentDynamicCategoryNav.innerHTML = '';
         allProducts = [];
 
         try {
             onSnapshot(collection(db, "categorias"), async (categorySnapshot) => {
                 console.log("Categories snapshot received.");
-                catalogContainer.innerHTML = ''; // Clear existing content
-                dynamicCategoryNav.innerHTML = ''; // Clear existing content
+                currentCatalogContainer.innerHTML = ''; // Clear existing content
+                currentDynamicCategoryNav.innerHTML = ''; // Clear existing content
 
                 const categories = [];
                 categorySnapshot.forEach(doc => {
@@ -180,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewAllLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
                 viewAllLink.dataset.category = 'all';
                 viewAllLink.textContent = 'Ver Todos los Productos';
-                dynamicCategoryNav.appendChild(viewAllLink);
+                currentDynamicCategoryNav.appendChild(viewAllLink);
 
                 // Renderiza las tarjetas de categoría y los enlaces de navegación por categoría
                 categories.forEach(category => {
@@ -190,24 +240,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     categoryCard.innerHTML = `
                         <img src="${category.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Categor%C3%ADa'}" alt="${category.nombre}" class="card-image">
                         <h4 class="product-title text-primary-dark">${category.nombre}</h4>
-                        <p class="product-description">Explora nuestra colección de ${category.nombre.toLowerCase()}.</p>
+                        <p class="product-description">${category.descripcion}</p>
                         <a href="#" class="view-details-link view-category" data-category="${category.nombre.toLowerCase()}">Ver ${category.nombre} &rarr;</a>
                     `;
-                    catalogContainer.appendChild(categoryCard);
+                    currentCatalogContainer.appendChild(categoryCard);
 
                     const navLink = document.createElement('a');
                     navLink.href = `#category-${category.nombre.toLowerCase()}`;
                     navLink.className = 'nav-link-style hover-text-accent py-2 px-4 nav-category-link';
                     navLink.dataset.category = category.nombre.toLowerCase();
                     navLink.textContent = category.nombre;
-                    dynamicCategoryNav.appendChild(navLink);
+                    currentDynamicCategoryNav.appendChild(navLink);
                 });
 
                 // Escucha cambios en la colección de muebles (productos)
                 try {
                     onSnapshot(collection(db, "muebles"), (productSnapshot) => {
                         console.log("Products snapshot received.");
-                        dynamicProductSections.innerHTML = ''; // Limpia las secciones de productos existentes
+                        currentDynamicProductSections.innerHTML = ''; // Limpia las secciones de productos existentes
 
                         const productsByCategory = {};
                         allProducts = []; // Reinicia allProducts para la búsqueda
@@ -246,11 +296,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `;
                                 productGrid.appendChild(productCard);
                             });
-                            dynamicProductSections.appendChild(categorySection);
+                            currentDynamicProductSections.appendChild(categorySection);
                         }
 
                         // Muestra la sección de INICIO por defecto al cargar el contenido
-                        showSection('inicio', false); // CAMBIO AQUÍ: Mostrar la sección de inicio por defecto
+                        showSection('inicio', false); // Mostrar la sección de inicio por defecto
 
                         // Configura los eventos de búsqueda después de cargar los productos
                         if (searchButton && searchInput) {
@@ -292,23 +342,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const sectionId = href.replace('#', '');
 
             if (sectionId === 'inicio') {
-                // Para la sección de inicio, asegúrate de que solo el contenido de inicio sea visible
-                const allSections = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #contacto');
-                allSections.forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById('inicio').classList.add('active'); // Usa active para inicio
-                history.pushState({ section: 'inicio' }, '', `#inicio`);
-            } else if (sectionId === 'nuestro-catalogo' || sectionId === 'contacto') {
+                showSection('inicio');
+            } else if (sectionId === 'nuestro-catalogo') {
                 showSection(sectionId);
-            } else if (link.classList.contains('nav-category-link')) {
+            } else if (sectionId === 'contacto') {
+                showSection(sectionId);
+            }
+            else if (link.classList.contains('nav-category-link')) {
                 const category = link.dataset.category;
                 if (category === 'all') {
-                    showAllProducts(); // Llama a la nueva función para mostrar todos los productos
+                    showAllProducts();
                 } else {
                     showSection(`category-${category}`);
                 }
-            } else if (link.classList.contains('view-category')) { // Maneja el clic en "Ver [Categoría]" en las tarjetas de categoría
+            } else if (link.classList.contains('view-category')) {
                 const category = link.dataset.category;
                 showSection(`category-${category}`);
             }
@@ -323,6 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Nuevo: Evento para el enlace "Contacto" en el menú principal
+    if (contactLink) {
+        contactLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            showSection('contacto');
+        });
+    }
+
     /**
      * Realiza una búsqueda de productos basada en el término de búsqueda.
      */
@@ -334,9 +389,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ocultar todas las secciones de productos y mostrar solo el catálogo general para la búsqueda
         document.querySelectorAll('.product-category-section').forEach(section => {
             section.classList.remove('active');
+            section.style.display = 'none'; // Asegurarse de que estén ocultas
         });
         document.getElementById('nuestro-catalogo').classList.add('active');
+        document.getElementById('nuestro-catalogo').style.display = 'block'; // Asegurarse de que esté visible
 
+        // Oculta la sección de contacto durante la búsqueda
+        if (contactSection) {
+            contactSection.style.display = 'none';
+            contactSection.classList.remove('active');
+        }
 
         productCards.forEach(card => {
             const productName = card.querySelector('h4').textContent.toLowerCase();
@@ -364,6 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Asegúrate de que todas las secciones de categoría estén activas si no hay búsqueda
             document.querySelectorAll('.product-category-section').forEach(section => {
                 section.classList.add('active');
+                section.style.display = 'block'; // Asegurarse de que estén visibles
             });
         }
 
@@ -451,6 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // Carga el contenido inicial al cargar la página
+    // Llama a cargarContenido
     cargarContenido();
 });
