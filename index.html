@@ -38,32 +38,46 @@
         }
 
         /* Menú móvil */
-        .menu-toggle { display: none; }
+        .menu-toggle {
+            display: none; /* Oculto por defecto en desktop */
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s ease;
+        }
+        .menu-toggle:hover {
+            background-color: #e0d8cf;
+        }
+
         @media (max-width: 768px) {
-            .menu-toggle { display: block; }
+            .menu-toggle { display: block; } /* Visible en móvil */
+            .nav-menu-desktop { display: none; } /* Ocultar menú de escritorio en móvil */
+
             .nav-menu-mobile {
                 display: flex;
                 flex-direction: column;
                 width: 100%;
                 background-color: #f8f5ee;
                 position: absolute;
-                top: 64px;
+                top: 64px; /* Ajustar según la altura del header */
                 left: 0;
                 padding: 1rem 0;
-                max-height: 0;
+                max-height: 0; /* Oculto inicialmente */
                 overflow: hidden;
                 opacity: 0;
                 visibility: hidden;
                 transition: max-height 0.4s ease-out, opacity 0.4s ease-out, visibility 0.4s ease-out;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra para el menú desplegable */
             }
             .nav-menu-mobile.active {
-                max-height: 500px;
+                max-height: 500px; /* Suficientemente grande para el contenido */
                 opacity: 1;
                 visibility: visible;
             }
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
                 border-bottom: 1px solid #e0d8cf;
+                text-align: center;
             }
             .nav-item-mobile:last-child {
                 border-bottom: none;
@@ -96,14 +110,12 @@
             z-index: 2;
         }
         .hero-button {
-            /* CAMBIO: Color de fondo inicial más contrastante */
             background-color: #a08c7e; /* Usar el color de acento por defecto */
             transition: all 0.3s ease; /* Transición suave para el botón */
             box-shadow: 0 6px 20px rgba(160, 140, 126, 0.4); /* Sombra más pronunciada */
         }
         .hero-button:hover {
             transform: translateY(-3px);
-            /* CAMBIO: Color de fondo al pasar el ratón */
             background-color: #6d5b4f; /* Volver al color principal de la marca */
             box-shadow: 0 8px 25px rgba(109, 91, 79, 0.5); /* Sombra aún más fuerte al pasar el ratón */
         }
@@ -454,6 +466,18 @@
             transform: scale(1.03); /* Ligeramente más grande */
         }
 
+        /* Animación de aparición en scroll */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
         /* Clases de utilidad Tailwind (reemplazando c-clases antiguas donde sea posible) */
         .container-base {
             max-width: 1280px;
@@ -498,37 +522,57 @@
             color: #a08c7e;
             transform: translateY(-1px); /* Pequeño movimiento al pasar el ratón */
         }
+
+        /* Estilos específicos del logo SVG */
+        .logo-svg {
+            height: 40px; /* Altura del logo */
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+        .logo-svg:hover {
+            transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
+        }
     </style>
 </head>
 <body class="bg-f8f5ee text-3a3a3a">
     <header class="sticky-header py-4 border-b border-primary-subtle">
         <nav class="container-base flex-between-center">
-            <a href="#inicio" class="text-3xl-bold text-primary-dark tracking-wide">
-                Respaldo Somier Luciano <span class="text-lg-normal font-normal">Muebles elegantes</span>
+            <a href="#inicio" class="flex items-center space-x-2">
+                <!-- SVG Logo -->
+                <svg class="logo-svg text-primary-dark" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <title>Mueblería Luciano Logo</title>
+                    <!-- Base para la 'L' o forma de mueble -->
+                    <path d="M20 80 L20 20 L80 20 L80 40 L40 40 L40 80 Z" fill="#6d5b4f"/>
+                    <!-- Detalle o acento -->
+                    <circle cx="60" cy="60" r="10" fill="#a08c7e"/>
+                </svg>
+                <span class="text-3xl-bold text-primary-dark tracking-wide">
+                    Luciano <span class="text-lg-normal font-normal">Muebles</span>
+                </span>
             </a>
-            <button class="menu-toggle focus:outline-none" aria-label="Toggle navigation">
+            <button class="menu-toggle md:hidden focus:outline-none" aria-label="Toggle navigation">
                 <svg class="icon-size text-primary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
-            <div id="nav-menu" class="hidden md:flex md:items-center md:space-x-6 nav-menu-mobile">
-                <a href="#inicio" class="nav-link-style hover-text-accent nav-link-padding">Inicio</a>
-                <a href="#nuestro-catalogo" class="nav-link-style hover-text-accent nav-link-padding" id="catalog-link">Nuestro Catálogo</a>
+            <div id="nav-menu" class="hidden md:flex md:items-center md:space-x-6 nav-menu-mobile nav-menu-desktop">
+                <a href="#inicio" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile">Inicio</a>
+                <a href="#nuestro-catalogo" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="catalog-link">Nuestro Catálogo</a>
 
                 <div class="category-dropdown">
-                    <a href="#" class="nav-link-style hover-text-accent nav-link-padding" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
+                    <a href="#" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
                     <div class="category-dropdown-content" id="dynamic-category-nav">
                         <a href="#" class="nav-link-style hover-text-accent py-2 px-4 nav-category-link" data-category="all">Ver Todos los Productos</a>
                     </div>
                 </div>
 
-                <a href="#contacto" class="nav-link-style hover-text-accent nav-link-padding">Contacto</a>
+                <a href="#contacto" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile">Contacto</a>
             </div>
         </nav>
     </header>
 
     <main class="container-base py-8">
-        <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light">
+        <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light fade-in-section">
             <div class="hero-content">
                 <h2 class="text-5xl md:text-6xl font-extrabold mb-4 text-primary-dark leading-tight">¡Bienvenido a Mueblería Luciano!</h2>
                 <p class="text-lg md:text-xl text-gray-700 max-w-4xl mx-auto mb-8">
@@ -543,7 +587,7 @@
             </div>
         </section>
 
-        <section id="nuestro-catalogo" class="section-padding bg-white rounded-xl shadow-md mt-8">
+        <section id="nuestro-catalogo" class="section-padding bg-white rounded-xl shadow-md mt-8 fade-in-section">
             <h3 class="section-heading text-primary-dark">Nuestro Catálogo</h3>
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Buscar productos..." class="search-input w-full max-w-md">
@@ -560,7 +604,7 @@
             <!-- Las secciones de productos por categoría se cargarán aquí -->
         </div>
 
-        <section id="contacto" class="section-padding bg-primary-light rounded-xl shadow-md mt-8">
+        <section id="contacto" class="section-padding bg-primary-light rounded-xl shadow-md mt-32 fade-in-section"> <!-- CAMBIO: mt-32 para más espacio en móvil -->
             <h3 class="section-heading text-primary-dark">Contáctanos</h3>
             <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
                 ¿Tienes alguna pregunta o necesitas asesoramiento? Estamos aquí para ayudarte a encontrar los muebles perfectos para tu hogar.
@@ -607,5 +651,3 @@
     </div>
 </body>
 </html>
-
-
