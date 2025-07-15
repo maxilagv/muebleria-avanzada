@@ -249,8 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             dynamicProductSections.appendChild(categorySection);
                         }
 
-                        // Muestra la sección del catálogo principal por defecto al cargar el contenido
-                        showSection('nuestro-catalogo', false);
+                        // Muestra la sección de INICIO por defecto al cargar el contenido
+                        showSection('inicio', false); // CAMBIO AQUÍ: Mostrar la sección de inicio por defecto
 
                         // Configura los eventos de búsqueda después de cargar los productos
                         if (searchButton && searchInput) {
