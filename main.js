@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("menuToggle (DOMContentLoaded):", menuToggle);
     const navMenu = document.getElementById('nav-menu');
     console.log("navMenu (DOMContentLoaded):", navMenu);
-    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay'); // Nuevo: Overlay del menú móvil
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay'); // Reintroducido el overlay
     console.log("mobileMenuOverlay (DOMContentLoaded):", mobileMenuOverlay);
     const mainContent = document.getElementById('main-content'); // Referencia al contenido principal
 
@@ -61,16 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('menu-open'); // Controla el scroll del body
             mainContent.classList.toggle('menu-open'); // Controla pointer-events del mainContent
 
-            // Solución: eliminamos estilo en línea para que el CSS controle la visibilidad
-            navMenu.style.removeProperty('display');
-
-            // Control explícito de pointer-events para el overlay
-            if (mobileMenuOverlay.classList.contains('active')) {
-                mobileMenuOverlay.style.pointerEvents = 'auto';
-            } else {
-                mobileMenuOverlay.style.pointerEvents = 'none';
-            }
-
             // Asegúrate de que el menú de categorías se cierre si el menú principal se cierra
             if (!navMenu.classList.contains('active') && dynamicCategoryNav.classList.contains('active')) {
                 dynamicCategoryNav.classList.remove('active');
@@ -78,23 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Cierra el menú y el overlay si se hace clic en el overlay (fondo gris)
-        // Se ha simplificado la condición para asegurar que el clic en el overlay siempre lo cierre
-        if (mobileMenuOverlay) {
-            mobileMenuOverlay.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                mobileMenuOverlay.classList.remove('active');
-                document.body.classList.remove('menu-open');
-                mainContent.classList.remove('menu-open');
-                if (dynamicCategoryNav) {
-                    dynamicCategoryNav.classList.remove('active');
-                }
-                navMenu.style.removeProperty('display'); // Asegura que no haya estilo inline
-                mobileMenuOverlay.style.pointerEvents = 'none'; // Asegura que no capture más eventos
-            });
-        }
+        // Este es el listener principal para cerrar el menú al hacer clic fuera de él.
+        mobileMenuOverlay.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            mainContent.classList.remove('menu-open');
+            if (dynamicCategoryNav) {
+                dynamicCategoryNav.classList.remove('active');
+            }
+        });
 
 
-        // Cierra el menú y el overlay al hacer clic en un enlace (para navegación móvil)
+        // Cierra el menú al hacer clic en un enlace (para navegación móvil)
         navMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 if (navMenu.classList.contains('active')) {
@@ -104,12 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     mainContent.classList.remove('menu-open'); // Permite pointer-events del mainContent
                 }
                 // Asegúrate de que el menú de categorías también se cierre
-                if (dynamicCategoryNav && dynamicCategoryNav.classList.contains('active')) { // Asegura que exista
+                if (dynamicCategoryNav && dynamicCategoryNav.classList.contains('active')) {
                     dynamicCategoryNav.classList.remove('active');
                 }
-                // IMPORTANTE: Eliminar el estilo 'display' en línea también al cerrar desde un enlace
-                navMenu.style.removeProperty('display');
-                mobileMenuOverlay.style.pointerEvents = 'none'; // Asegura que no capture más eventos
             });
         });
     }
