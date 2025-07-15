@@ -54,7 +54,7 @@
             .nav-menu-desktop { display: none; } /* Ocultar menú de escritorio en móvil */
 
             .nav-menu-mobile {
-                display: flex;
+                display: none; /* Oculto inicialmente en móvil */
                 flex-direction: column;
                 width: 100%;
                 background-color: #f8f5ee;
@@ -70,6 +70,7 @@
                 box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra para el menú desplegable */
             }
             .nav-menu-mobile.active {
+                display: flex; /* Mostrar como flexbox cuando está activo */
                 max-height: 500px; /* Suficientemente grande para el contenido */
                 opacity: 1;
                 visibility: visible;
@@ -630,7 +631,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
-            <div id="nav-menu" class="hidden md:flex md:items-center md:space-x-6 nav-menu-mobile nav-menu-desktop">
+            <!-- Se eliminó la clase 'hidden' de aquí -->
+            <div id="nav-menu" class="md:flex md:items-center md:space-x-6 nav-menu-mobile nav-menu-desktop">
                 <a href="#inicio" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile">Inicio</a>
                 <a href="#nuestro-catalogo" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="catalog-link">Nuestro Catálogo</a>
 
