@@ -17,6 +17,16 @@
             line-height: 1.6;
         }
 
+        /* Nueva regla para evitar el scroll del body cuando el menú móvil está abierto */
+        body.menu-open {
+            overflow: hidden;
+        }
+
+        /* Nueva regla para deshabilitar clics en el contenido principal cuando el menú móvil está abierto */
+        main.menu-open {
+            pointer-events: none;
+        }
+
         h1, h2, h3, h4 {
             font-family: 'Playfair Display', serif; /* Fuente elegante para títulos */
             color: #6d5b4f; /* Color principal de la marca */
@@ -54,27 +64,35 @@
             .nav-menu-desktop { display: none; } /* Ocultar menú de escritorio en móvil */
 
             .nav-menu-mobile {
-                display: none; /* Oculto inicialmente en móvil */
+                position: fixed; /* Fixed position for off-canvas menu */
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 70%; /* Adjust width as needed */
+                max-width: 300px; /* Max width for larger mobiles/small tablets */
+                background-color: #f8f5ee; /* Color de fondo del menú */
                 flex-direction: column;
-                width: 100%;
-                background-color: #f8f5ee;
-                position: absolute;
-                top: 64px; /* Ajustar según la altura del header */
-                left: 0;
                 padding: 1rem 0;
-                max-height: 0; /* Oculto inicialmente */
-                overflow: hidden;
-                opacity: 0;
-                visibility: hidden;
-                transition: max-height 0.4s ease-out, opacity 0.4s ease-out, visibility 0.4s ease-out;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra para el menú desplegable */
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1); /* Shadow for slide effect */
+                transform: translateX(100%); /* Start off-screen */
+                transition: transform 0.4s ease-out, background-color 0.4s ease-out; /* Transición para el fondo también */
+                z-index: 1000; /* Ensure it's above everything else */
+                overflow-y: auto; /* Enable scrolling for long menus */
+                display: flex; /* Siempre flex, visibilidad controlada por transform */
+                /* El fondo gris se aplicará directamente al nav-menu-mobile cuando esté activo */
             }
             .nav-menu-mobile.active {
-                display: flex; /* Mostrar como flexbox cuando está activo */
-                max-height: 500px; /* Suficientemente grande para el contenido */
-                opacity: 1;
-                visibility: visible;
+                transform: translateX(0); /* Slide in */
+                background-color: rgba(248, 245, 238, 0.95); /* Fondo gris semi-transparente para el overlay */
+                /* Asegura que el menú sea clickeable cuando está activo */
+                pointer-events: auto;
             }
+            /* Ocultar el menú móvil cuando no está activo */
+            .nav-menu-mobile:not(.active) {
+                pointer-events: none;
+                visibility: hidden;
+            }
+
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
                 border-bottom: 1px solid #e0d8cf;
@@ -82,6 +100,44 @@
             }
             .nav-item-mobile:last-child {
                 border-bottom: none;
+            }
+
+            /* Dropdown de categorías en móvil */
+            .category-dropdown-content {
+                display: none; /* Hidden by default */
+                flex-direction: column; /* Display as column when active */
+                position: static; /* No absolute positioning within the fixed menu */
+                width: 100%;
+                box-shadow: none; /* No shadow needed here */
+                border-radius: 0;
+                margin-top: 0;
+                opacity: 1; /* Always visible when parent is active */
+                visibility: visible;
+                transform: translateY(0);
+            }
+            .category-dropdown-content.active {
+                display: flex; /* Show when active */
+            }
+
+            /* FIX para la superposición de títulos de categoría en móvil */
+            .product-category-section .section-heading {
+                background-color: #f8f5ee; /* Fondo para que el texto no se superponga con la imagen */
+                padding-top: 1.5rem; /* Más padding superior */
+                padding-bottom: 1.5rem; /* Más padding inferior */
+                margin-bottom: 0; /* Eliminar margen inferior para que el padding controle el espacio */
+                position: relative; /* Mantener para el pseudo-elemento ::after */
+                z-index: 5; /* Asegurar que esté por encima de las imágenes de productos */
+                box-sizing: border-box; /* Incluir padding en el cálculo del ancho/alto */
+                width: 100%; /* Asegurar que ocupe todo el ancho disponible */
+                display: block; /* Asegurar comportamiento de bloque */
+            }
+            .product-category-section .section-heading::after {
+                bottom: 1rem; /* Ajustar la posición de la línea decorativa */
+            }
+
+            /* Nueva regla para separar las secciones de productos por categoría en móvil */
+            .product-category-section + .product-category-section {
+                margin-top: 3rem; /* Añade margen superior entre secciones de categoría consecutivas */
             }
         }
 
@@ -189,7 +245,7 @@
             text-overflow: ellipsis;
         }
         .product-price {
-            font-size: 1.6rem; /* Precio más destacado */
+            font-size: 1.6rem; /* Precio más grande y negrita */
             font-weight: 700;
             color: #6d5b4f;
             margin-bottom: 1.5rem;
@@ -639,7 +695,7 @@
                 <div class="category-dropdown">
                     <a href="#" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
                     <div class="category-dropdown-content" id="dynamic-category-nav">
-                        <a href="#" class="nav-link-style hover-text-accent py-2 px-4 nav-category-link" data-category="all">Ver Todos los Productos</a>
+                        <!-- ELIMINADO: <a href="#" class="nav-link-style hover-text-accent py-2 px-4 nav-category-link" data-category="all">Ver Todos los Productos</a> -->
                     </div>
                 </div>
 
@@ -649,7 +705,9 @@
         </nav>
     </header>
 
-    <main class="container-base py-8">
+    <div id="mobile-menu-overlay"></div> <!-- Reintroducido el overlay -->
+
+    <main id="main-content" class="container-base py-8">
         <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light fade-in-section active">
             <div class="hero-content">
                 <h2 class="text-5xl md:text-6xl font-extrabold mb-4 text-primary-dark leading-tight">¡Bienvenido a Mueblería Luciano!</h2>
