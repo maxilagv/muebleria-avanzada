@@ -1,4 +1,4 @@
-import { db } from "./firebaseconfig.js";
+import { db } from "../firebaseconfig.js";
 import { collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 let allProducts = []; // allProducts sí se mantiene como variable global
@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navMenu.classList.toggle('active');
             mobileMenuOverlay.classList.toggle('active');
             document.body.classList.toggle('menu-open'); // Controla el scroll y pointer-events del body
-            // Removido: mainContent.classList.toggle('menu-open');
             // Asegúrate de que el menú de categorías se cierre si el menú principal se cierra
             if (!navMenu.classList.contains('active') && dynamicCategoryNav.classList.contains('active')) {
                 dynamicCategoryNav.classList.remove('active');
@@ -68,20 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cierra el menú y el overlay si se hace clic fuera de ellos
         document.addEventListener('click', (event) => {
-            const clickedInsideNavMenu = navMenu.contains(event.target);
-            const clickedToggle = menuToggle.contains(event.target);
-            const clickedDropdownToggle = categoryDropdownToggle.contains(event.target);
-            const clickedDropdownContent = dynamicCategoryNav.contains(event.target);
+            const target = event.target;
 
-            // Solo cerrar si el clic fue fuera de todo el menú y sus elementos hijos
-            if (!clickedInsideNavMenu && !clickedToggle && !clickedDropdownToggle && !clickedDropdownContent) {
-                navMenu.classList.remove('active');
-                mobileMenuOverlay.classList.remove('active');
-                document.body.classList.remove('menu-open'); // Permite el scroll y pointer-events del body
-                // Removido: mainContent.classList.remove('menu-open');
+            // Si el clic fue dentro de cualquiera de estos elementos, no cerrar
+            if (
+                navMenu.contains(target) ||
+                menuToggle.contains(target) ||
+                (categoryDropdownToggle && categoryDropdownToggle.contains(target)) || // Asegura que exista antes de usar contains
+                (dynamicCategoryNav && dynamicCategoryNav.contains(target)) // Asegura que exista antes de usar contains
+            ) {
+                return;
+            }
+
+            // Si fue afuera, cerrar
+            navMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.classList.remove('menu-open'); // Permite el scroll y pointer-events del body
+            if (dynamicCategoryNav) { // Asegura que exista antes de remover la clase
                 dynamicCategoryNav.classList.remove('active');
             }
         });
+
 
         // Cierra el menú y el overlay al hacer clic en un enlace (para navegación móvil)
         navMenu.querySelectorAll('a').forEach(link => {
@@ -90,10 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     navMenu.classList.remove('active');
                     mobileMenuOverlay.classList.remove('active');
                     document.body.classList.remove('menu-open'); // Permite el scroll y pointer-events del body
-                    // Removido: mainContent.classList.remove('menu-open');
                 }
                 // Asegúrate de que el menú de categorías también se cierre
-                if (dynamicCategoryNav.classList.contains('active')) {
+                if (dynamicCategoryNav && dynamicCategoryNav.classList.contains('active')) { // Asegura que exista
                     dynamicCategoryNav.classList.remove('active');
                 }
             });
@@ -400,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const category = link.dataset.category;
                 showSection(`category-${category}`);
                 // Cierra el menú de categorías después de seleccionar una opción
-                if (dynamicCategoryNav.classList.contains('active')) {
+                if (dynamicCategoryNav && dynamicCategoryNav.classList.contains('active')) { // Asegura que exista
                     dynamicCategoryNav.classList.remove('active');
                 }
             } else if (link.classList.contains('view-category')) {
