@@ -20,12 +20,10 @@
         /* Nueva regla para evitar el scroll del body cuando el menú móvil está abierto */
         body.menu-open {
             overflow: hidden;
+            pointer-events: none; /* IMPORTANTE: Deshabilita clics en todo el body cuando el menú está abierto */
         }
 
-        /* Nueva regla para deshabilitar clics en el contenido principal cuando el menú móvil está abierto */
-        main.menu-open {
-            pointer-events: none;
-        }
+        /* Removido: main.menu-open { pointer-events: none; } */
 
         h1, h2, h3, h4 {
             font-family: 'Playfair Display', serif; /* Fuente elegante para títulos */
@@ -71,12 +69,12 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
-            pointer-events: none; /* IMPORTANTE: Por defecto, no captura eventos de puntero */
+            pointer-events: none; /* Por defecto, no captura eventos de puntero */
         }
         #mobile-menu-overlay.active {
             opacity: 1;
             visibility: visible;
-            pointer-events: auto; /* IMPORTANTE: Habilita eventos de puntero cuando está activo */
+            pointer-events: auto; /* Habilita eventos de puntero cuando está activo */
         }
 
         @media (max-width: 768px) {
@@ -99,11 +97,11 @@
                 z-index: 1000; /* Ensure it's above everything else */
                 overflow-y: auto; /* Enable scrolling for long menus */
                 display: flex; /* Always flex, visibility controlled by transform */
-                pointer-events: none; /* IMPORTANTE: Deshabilita eventos de puntero cuando está oculto */
+                pointer-events: none; /* Deshabilita eventos de puntero cuando está oculto */
             }
             .nav-menu-mobile.active {
                 transform: translateX(0); /* Slide in */
-                pointer-events: auto; /* IMPORTANTE: Habilita eventos de puntero cuando está activo */
+                pointer-events: auto; /* Habilita eventos de puntero cuando está activo */
             }
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
