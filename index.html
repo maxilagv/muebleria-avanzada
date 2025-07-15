@@ -71,10 +71,12 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
+            pointer-events: none; /* IMPORTANTE: Por defecto, no captura eventos de puntero */
         }
         #mobile-menu-overlay.active {
             opacity: 1;
             visibility: visible;
+            pointer-events: auto; /* IMPORTANTE: Habilita eventos de puntero cuando está activo */
         }
 
         @media (max-width: 768px) {
@@ -97,11 +99,11 @@
                 z-index: 1000; /* Ensure it's above everything else */
                 overflow-y: auto; /* Enable scrolling for long menus */
                 display: flex; /* Always flex, visibility controlled by transform */
-                /* Removido: pointer-events: none; */
+                pointer-events: none; /* IMPORTANTE: Deshabilita eventos de puntero cuando está oculto */
             }
             .nav-menu-mobile.active {
                 transform: translateX(0); /* Slide in */
-                /* Removido: pointer-events: auto; */
+                pointer-events: auto; /* IMPORTANTE: Habilita eventos de puntero cuando está activo */
             }
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
