@@ -337,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const href = link.getAttribute('href');
 
+        // Solo prevenir el comportamiento por defecto si es un enlace interno (empieza con #)
         if (href && href.startsWith('#')) {
             event.preventDefault();
             const sectionId = href.replace('#', '');
@@ -455,19 +456,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Maneja la apertura del modal de detalles del producto
     document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('view-details-link')) {
-            event.preventDefault();
-            const productId = event.target.dataset.productId;
-            const product = allProducts.find(p => p.id === productId);
+        const target = event.target.closest('.view-details-link'); // Usa closest para asegurar que es el enlace
+        if (target) {
+            // Solo prevenir el comportamiento por defecto y abrir el modal si tiene un data-product-id
+            if (target.dataset.productId) {
+                event.preventDefault();
+                const productId = target.dataset.productId;
+                const product = allProducts.find(p => p.id === productId);
 
-            if (product) {
-                modalProductImage.src = product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto';
-                modalProductImage.alt = product.nombre;
-                modalProductName.textContent = product.nombre;
-                modalProductDescription.textContent = product.descripcion;
-                modalProductPrice.textContent = `$${product.precio.toFixed(2)}`;
-                productDetailModal.classList.add('show');
+                if (product) {
+                    modalProductImage.src = product.imagen || 'https://placehold.co/400x300/e0d8cf/6d5b4f?text=Producto';
+                    modalProductImage.alt = product.nombre;
+                    modalProductName.textContent = product.nombre;
+                    modalProductDescription.textContent = product.descripcion;
+                    modalProductPrice.textContent = `$${product.precio.toFixed(2)}`;
+                    productDetailModal.classList.add('show');
+                }
             }
+            // Si no tiene data-product-id, se permite el comportamiento por defecto (navegar a la URL)
         }
     });
 
