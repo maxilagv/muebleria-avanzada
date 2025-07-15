@@ -67,9 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Cierra el menú y el overlay si se hace clic en el overlay (fondo gris)
+        // Cierra el menú si se hace clic fuera del menú o del botón de hamburguesa
         // Este es el listener principal para cerrar el menú al hacer clic fuera de él.
-        mobileMenuOverlay.addEventListener('click', () => {
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+
+            // Si el menú no está activo, no hacemos nada
+            if (!navMenu.classList.contains('active')) {
+                return;
+            }
+
+            // Si el clic fue dentro del menú, del botón de hamburguesa o del dropdown de categorías, no cerrar
+            if (
+                navMenu.contains(target) ||
+                menuToggle.contains(target) ||
+                (categoryDropdownToggle && categoryDropdownToggle.contains(target)) ||
+                (dynamicCategoryNav && dynamicCategoryNav.contains(target))
+            ) {
+                return;
+            }
+
+            // Si fue afuera, cerrar el menú
             navMenu.classList.remove('active');
             mobileMenuOverlay.classList.remove('active');
             document.body.classList.remove('menu-open');
