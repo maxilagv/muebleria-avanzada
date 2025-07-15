@@ -1,4 +1,4 @@
-import { db } from "../firebaseconfig.js";
+import { db } from "./firebaseconfig.js"; // Ruta corregida
 import { collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 let allProducts = []; // allProducts sí se mantiene como variable global
@@ -58,35 +58,40 @@ document.addEventListener('DOMContentLoaded', () => {
             event.stopPropagation(); // Evita que el clic se propague al documento
             navMenu.classList.toggle('active');
             mobileMenuOverlay.classList.toggle('active');
-            document.body.classList.toggle('menu-open'); // Controla el scroll y pointer-events del body
+            document.body.classList.toggle('menu-open'); // Controla el scroll del body
+            mainContent.classList.toggle('menu-open'); // Controla pointer-events del mainContent
+
+            // Solución: eliminamos estilo en línea para que el CSS controle la visibilidad
+            navMenu.style.removeProperty('display');
+
+            // Control explícito de pointer-events para el overlay
+            if (mobileMenuOverlay.classList.contains('active')) {
+                mobileMenuOverlay.style.pointerEvents = 'auto';
+            } else {
+                mobileMenuOverlay.style.pointerEvents = 'none';
+            }
+
             // Asegúrate de que el menú de categorías se cierre si el menú principal se cierra
             if (!navMenu.classList.contains('active') && dynamicCategoryNav.classList.contains('active')) {
                 dynamicCategoryNav.classList.remove('active');
             }
         });
 
-        // Cierra el menú y el overlay si se hace clic fuera de ellos
-        document.addEventListener('click', (event) => {
-            const target = event.target;
-
-            // Si el clic fue dentro de cualquiera de estos elementos, no cerrar
-            if (
-                navMenu.contains(target) ||
-                menuToggle.contains(target) ||
-                (categoryDropdownToggle && categoryDropdownToggle.contains(target)) || // Asegura que exista antes de usar contains
-                (dynamicCategoryNav && dynamicCategoryNav.contains(target)) // Asegura que exista antes de usar contains
-            ) {
-                return;
-            }
-
-            // Si fue afuera, cerrar
-            navMenu.classList.remove('active');
-            mobileMenuOverlay.classList.remove('active');
-            document.body.classList.remove('menu-open'); // Permite el scroll y pointer-events del body
-            if (dynamicCategoryNav) { // Asegura que exista antes de remover la clase
-                dynamicCategoryNav.classList.remove('active');
-            }
-        });
+        // Cierra el menú y el overlay si se hace clic en el overlay (fondo gris)
+        // Se ha simplificado la condición para asegurar que el clic en el overlay siempre lo cierre
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileMenuOverlay.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                mainContent.classList.remove('menu-open');
+                if (dynamicCategoryNav) {
+                    dynamicCategoryNav.classList.remove('active');
+                }
+                navMenu.style.removeProperty('display'); // Asegura que no haya estilo inline
+                mobileMenuOverlay.style.pointerEvents = 'none'; // Asegura que no capture más eventos
+            });
+        }
 
 
         // Cierra el menú y el overlay al hacer clic en un enlace (para navegación móvil)
@@ -95,12 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (navMenu.classList.contains('active')) {
                     navMenu.classList.remove('active');
                     mobileMenuOverlay.classList.remove('active');
-                    document.body.classList.remove('menu-open'); // Permite el scroll y pointer-events del body
+                    document.body.classList.remove('menu-open'); // Permite el scroll del body
+                    mainContent.classList.remove('menu-open'); // Permite pointer-events del mainContent
                 }
                 // Asegúrate de que el menú de categorías también se cierre
                 if (dynamicCategoryNav && dynamicCategoryNav.classList.contains('active')) { // Asegura que exista
                     dynamicCategoryNav.classList.remove('active');
                 }
+                // IMPORTANTE: Eliminar el estilo 'display' en línea también al cerrar desde un enlace
+                navMenu.style.removeProperty('display');
+                mobileMenuOverlay.style.pointerEvents = 'none'; // Asegura que no capture más eventos
             });
         });
     }
