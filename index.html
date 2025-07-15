@@ -17,14 +17,6 @@
             line-height: 1.6;
         }
 
-        /* Nueva regla para evitar el scroll del body cuando el menú móvil está abierto */
-        body.menu-open {
-            overflow: hidden;
-            pointer-events: none; /* IMPORTANTE: Deshabilita clics en todo el body cuando el menú está abierto */
-        }
-
-        /* Removido: main.menu-open { pointer-events: none; } */
-
         h1, h2, h3, h4 {
             font-family: 'Playfair Display', serif; /* Fuente elegante para títulos */
             color: #6d5b4f; /* Color principal de la marca */
@@ -57,51 +49,31 @@
             background-color: #e0d8cf;
         }
 
-        /* Overlay para el menú móvil */
-        #mobile-menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999; /* Just below the menu */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
-            pointer-events: none; /* Por defecto, no captura eventos de puntero */
-        }
-        #mobile-menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto; /* Habilita eventos de puntero cuando está activo */
-        }
-
         @media (max-width: 768px) {
             .menu-toggle { display: block; } /* Visible en móvil */
             .nav-menu-desktop { display: none; } /* Ocultar menú de escritorio en móvil */
 
             .nav-menu-mobile {
-                position: fixed; /* Fixed position for off-canvas menu */
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 70%; /* Adjust width as needed */
-                max-width: 300px; /* Max width for larger mobiles/small tablets */
-                background-color: #f8f5ee;
+                display: none; /* Oculto inicialmente en móvil */
                 flex-direction: column;
+                width: 100%;
+                background-color: #f8f5ee;
+                position: absolute;
+                top: 64px; /* Ajustar según la altura del header */
+                left: 0;
                 padding: 1rem 0;
-                box-shadow: -5px 0 15px rgba(0,0,0,0.1); /* Shadow for slide effect */
-                transform: translateX(100%); /* Start off-screen */
-                transition: transform 0.4s ease-out;
-                z-index: 1000; /* Ensure it's above everything else */
-                overflow-y: auto; /* Enable scrolling for long menus */
-                display: flex; /* Always flex, visibility controlled by transform */
-                pointer-events: none; /* Deshabilita eventos de puntero cuando está oculto */
+                max-height: 0; /* Oculto inicialmente */
+                overflow: hidden;
+                opacity: 0;
+                visibility: hidden;
+                transition: max-height 0.4s ease-out, opacity 0.4s ease-out, visibility 0.4s ease-out;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra para el menú desplegable */
             }
             .nav-menu-mobile.active {
-                transform: translateX(0); /* Slide in */
-                pointer-events: auto; /* Habilita eventos de puntero cuando está activo */
+                display: flex; /* Mostrar como flexbox cuando está activo */
+                max-height: 500px; /* Suficientemente grande para el contenido */
+                opacity: 1;
+                visibility: visible;
             }
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
@@ -110,44 +82,6 @@
             }
             .nav-item-mobile:last-child {
                 border-bottom: none;
-            }
-
-            /* Dropdown de categorías en móvil */
-            .category-dropdown-content {
-                display: none; /* Hidden by default */
-                flex-direction: column; /* Display as column when active */
-                position: static; /* No absolute positioning within the fixed menu */
-                width: 100%;
-                box-shadow: none; /* No shadow needed here */
-                border-radius: 0;
-                margin-top: 0;
-                opacity: 1; /* Always visible when parent is active */
-                visibility: visible;
-                transform: translateY(0);
-            }
-            .category-dropdown-content.active {
-                display: flex; /* Show when active */
-            }
-
-            /* FIX para la superposición de títulos de categoría en móvil */
-            .product-category-section .section-heading {
-                background-color: #f8f5ee; /* Fondo para que el texto no se superponga con la imagen */
-                padding-top: 1.5rem; /* Más padding superior */
-                padding-bottom: 1.5rem; /* Más padding inferior */
-                margin-bottom: 0; /* Eliminar margen inferior para que el padding controle el espacio */
-                position: relative; /* Mantener para el pseudo-elemento ::after */
-                z-index: 5; /* Asegurar que esté por encima de las imágenes de productos */
-                box-sizing: border-box; /* Incluir padding en el cálculo del ancho/alto */
-                width: 100%; /* Asegurar que ocupe todo el ancho disponible */
-                display: block; /* Asegurar comportamiento de bloque */
-            }
-            .product-category-section .section-heading::after {
-                bottom: 1rem; /* Ajustar la posición de la línea decorativa */
-            }
-
-            /* Nueva regla para separar las secciones de productos por categoría en móvil */
-            .product-category-section + .product-category-section {
-                margin-top: 3rem; /* Añade margen superior entre secciones de categoría consecutivas */
             }
         }
 
@@ -342,33 +276,30 @@
             position: relative;
             display: inline-block;
         }
-        /* .category-dropdown-content estilos para desktop */
-        @media (min-width: 769px) { /* Apply these styles only on desktop */
-            .category-dropdown-content {
-                display: none;
-                position: absolute;
-                background-color: #ffffff;
-                min-width: 200px;
-                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-                z-index: 10;
-                border-radius: 0.5rem;
-                overflow: hidden;
-                top: 100%;
-                left: 0;
-                margin-top: 0.5rem;
-                opacity: 0;
-                visibility: hidden;
-                transform: translateY(10px);
-                transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            }
-            .category-dropdown:hover .category-dropdown-content {
-                display: block;
-                opacity: 1;
-                visibility: visible;
-                transform: translateY(0);
-            }
+        .category-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 10;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
         }
-
+        .category-dropdown:hover .category-dropdown-content,
+        .category-dropdown-content.active {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
         .category-dropdown-content a {
             color: #3a3a3a;
             padding: 12px 16px;
@@ -458,7 +389,7 @@
             margin-bottom: 1.5rem;
         }
         .modal-price {
-            font-size: 1.8rem; /* Precio más destacado */
+            font-size: 1.8rem; /* Precio más grande y negrita */
             font-weight: 700;
             color: #6d5b4f;
             margin-bottom: 1.5rem;
@@ -700,6 +631,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
+            <!-- Se eliminó la clase 'hidden' de aquí -->
             <div id="nav-menu" class="md:flex md:items-center md:space-x-6 nav-menu-mobile nav-menu-desktop">
                 <a href="#inicio" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile">Inicio</a>
                 <a href="#nuestro-catalogo" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="catalog-link">Nuestro Catálogo</a>
@@ -707,7 +639,7 @@
                 <div class="category-dropdown">
                     <a href="#" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="category-dropdown-toggle">Categorías <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
                     <div class="category-dropdown-content" id="dynamic-category-nav">
-                        <!-- ELIMINADO: <a href="#" class="nav-link-style hover-text-accent py-2 px-4 nav-category-link" data-category="all">Ver Todos los Productos</a> -->
+                        <a href="#" class="nav-link-style hover-text-accent py-2 px-4 nav-category-link" data-category="all">Ver Todos los Productos</a>
                     </div>
                 </div>
 
@@ -717,9 +649,7 @@
         </nav>
     </header>
 
-    <div id="mobile-menu-overlay"></div> <!-- New overlay div -->
-
-    <main id="main-content" class="container-base py-8"> <!-- Added id="main-content" -->
+    <main class="container-base py-8">
         <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light fade-in-section active">
             <div class="hero-content">
                 <h2 class="text-5xl md:text-6xl font-extrabold mb-4 text-primary-dark leading-tight">¡Bienvenido a Mueblería Luciano!</h2>
@@ -765,7 +695,7 @@
                         <i class="fas fa-envelope contact-icon"></i>
                         <h4 class="contact-item-title">Correo Electrónico</h4>
                         <p class="contact-item-text">maxilavagetto@gmail.com</p>
-                        <a href="mailto:maxilavagetto@gmail.2com" class="view-details-link mt-4">Enviar Correo</a>
+                        <a href="mailto:maxilavagetto@gmail.com" class="view-details-link mt-4">Enviar Correo</a>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-phone-alt contact-icon"></i>
