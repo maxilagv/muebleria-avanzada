@@ -532,6 +532,81 @@
         .logo-svg:hover {
             transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
         }
+
+        /* Estilos para la sección de contacto mejorada */
+        .contact-section-improved {
+            background-color: #f0ebe3; /* Fondo más claro para la sección */
+            background-image: url('https://placehold.co/1920x600/e0d8cf/6d5b4f?text=Contactanos'); /* Imagen de fondo sutil */
+            background-size: cover;
+            background-position: center;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-section-improved::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(248, 245, 238, 0.9), rgba(248, 245, 238, 0.7)); /* Degradado sutil */
+            z-index: 1;
+        }
+        .contact-content-wrapper {
+            position: relative;
+            z-index: 2;
+            padding: 3rem;
+            text-align: center;
+        }
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+        }
+        @media (min-width: 768px) {
+            .contact-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .contact-info-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .contact-item {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .contact-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .contact-icon {
+            font-size: 2.5rem;
+            color: #a08c7e;
+            margin-bottom: 1rem;
+        }
+        .contact-item-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #6d5b4f;
+            margin-bottom: 0.5rem;
+        }
+        .contact-item-text {
+            color: #5a6a7a;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body class="bg-f8f5ee text-3a3a3a">
@@ -566,13 +641,14 @@
                     </div>
                 </div>
 
-                <a href="#contacto" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile">Contacto</a>
+                <!-- Nuevo enlace para Contacto que activa la sección -->
+                <a href="#contacto" class="nav-link-style hover-text-accent nav-link-padding nav-item-mobile" id="contact-link">Contacto</a>
             </div>
         </nav>
     </header>
 
     <main class="container-base py-8">
-        <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light fade-in-section">
+        <section id="inicio" class="hero-section text-center py-20 md:py-32 bg-primary-light fade-in-section active">
             <div class="hero-content">
                 <h2 class="text-5xl md:text-6xl font-extrabold mb-4 text-primary-dark leading-tight">¡Bienvenido a Mueblería Luciano!</h2>
                 <p class="text-lg md:text-xl text-gray-700 max-w-4xl mx-auto mb-8">
@@ -604,17 +680,54 @@
             <!-- Las secciones de productos por categoría se cargarán aquí -->
         </div>
 
-        <section id="contacto" class="section-padding bg-primary-light rounded-xl shadow-md mt-32 fade-in-section"> <!-- CAMBIO: mt-32 para más espacio en móvil -->
-            <h3 class="section-heading text-primary-dark">Contáctanos</h3>
-            <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
-                ¿Tienes alguna pregunta o necesitas asesoramiento? Estamos aquí para ayudarte a encontrar los muebles perfectos para tu hogar.
-            </p>
-            <div class="text-xl text-primary-dark text-center space-y-3">
-                <p>Email: <a href="mailto:info@muebleselegancia.com" class="hover-text-accent underline">maxilavagetto@gmail.com</a></p>
-                <p>Teléfono: <a href="tel:+541123456789" class="hover-text-accent underline">+54 11 3772-5766</a></p>
-                <p>Sede principal: Av. Triunvirato 2800, esquina Juan B. Justo, Quilmes Oeste</p>
-                <p>Redes sociales: <a href="https://www.instagram.com/respaldo.sommier.luciano?utm_source=qr&igsh=MWcxNmRpcGI0MW5tdA==" class="hover-text-accent underline" target="_blank">Instagram</a></p>
-                <p>Horario de atención al cliente: 10:30 a 13:30 y 16:00 a 19:00</p>
+        <!-- Sección de Contacto Mejorada y Oculta por defecto -->
+        <section id="contacto" class="section-padding contact-section-improved mt-8 fade-in-section">
+            <div class="contact-content-wrapper">
+                <h3 class="section-heading text-primary-dark">¡Hablemos de tus ideas!</h3>
+                <p class="text-lg text-gray-700 max-w-3xl mx-auto mb-8">
+                    Estamos aquí para ayudarte a encontrar los muebles perfectos y resolver todas tus dudas.
+                    Contáctanos a través de cualquiera de nuestros canales.
+                </p>
+                <div class="contact-info-grid">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <h4 class="contact-item-title">Correo Electrónico</h4>
+                        <p class="contact-item-text">maxilavagetto@gmail.com</p>
+                        <a href="mailto:maxilavagetto@gmail.com" class="view-details-link mt-4">Enviar Correo</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt contact-icon"></i>
+                        <h4 class="contact-item-title">Teléfono</h4>
+                        <p class="contact-item-text">+54 11 3772-5766</p>
+                        <a href="tel:+541137725766" class="view-details-link mt-4">Llamar Ahora</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <h4 class="contact-item-title">Ubicación</h4>
+                        <p class="contact-item-text">Av. Triunvirato 2800, Quilmes Oeste</p>
+                        <!-- Enlace a Google Maps actualizado -->
+                        <a href="https://www.google.com/maps/search/?api=1&query=Av.+Triunvirato+2800,+Quilmes+Oeste" target="_blank" class="view-details-link mt-4">Ver en Mapa</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-instagram contact-icon"></i>
+                        <h4 class="contact-item-title">Instagram</h4>
+                        <p class="contact-item-text">@respaldo.sommier.luciano</p>
+                        <!-- Enlace a Instagram actualizado (ya estaba correcto, confirmando) -->
+                        <a href="https://www.instagram.com/respaldo.sommier.luciano?utm_source=qr&igsh=MWcxNmRpcGI0MW5tdA==" target="_blank" class="view-details-link mt-4">Visitar Perfil</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock contact-icon"></i>
+                        <h4 class="contact-item-title">Horario</h4>
+                        <p class="contact-item-text">Lun-Vie: 10:30-13:30 y 16:00-19:00</p>
+                        <p class="contact-item-text">Sáb: 10:30-13:30</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-whatsapp contact-icon"></i>
+                        <h4 class="contact-item-title">WhatsApp</h4>
+                        <p class="contact-item-text">Envíanos un mensaje</p>
+                        <a href="https://wa.me/5491151100603" target="_blank" class="view-details-link mt-4">Chatear Ahora</a>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -626,6 +739,7 @@
                 <a href="#" class="hover:text-f0ebe3 transition-colors" aria-label="Facebook">
                     <i class="fab fa-facebook"></i>
                 </a>
+                <!-- Instagram link actualizado en el footer -->
                 <a href="https://www.instagram.com/respaldo.sommier.luciano?utm_source=qr&igsh=MWcxNmRpcGI0MW5tdA==" class="hover:text-f0ebe3 transition-colors" aria-label="Instagram" target="_blank">
                     <i class="fab fa-instagram"></i>
                 </a>
