@@ -190,7 +190,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ELIMINADO: showAllProducts() function is no longer needed.
+    /**
+     * Muestra la sección principal del catálogo y todas las secciones de productos por categoría.
+     * Oculta la sección de contacto.
+     */
+    function showAllProducts() {
+        // Selecciona todas las secciones principales y contenedores de productos
+        const allContentContainers = document.querySelectorAll('.product-category-section, #nuestro-catalogo, #inicio, #contacto, #catalog-container, #dynamic-product-sections');
+        const catalogContainer = document.getElementById('catalog-container');
+        const dynamicProductSections = document.getElementById('dynamic-product-sections');
+
+        // Oculta explícitamente todos los contenedores de contenido al inicio
+        allContentContainers.forEach(container => {
+            container.classList.remove('active');
+            container.style.display = 'none';
+        });
+
+        // Muestra la sección principal del catálogo (para la barra de búsqueda, etc.)
+        const catalogSection = document.getElementById('nuestro-catalogo');
+        if (catalogSection) {
+            catalogSection.style.display = 'block';
+            catalogSection.classList.add('active');
+        }
+
+        // Asegúrate de que catalogContainer esté oculto cuando se muestran todos los productos
+        if (catalogContainer) {
+            catalogContainer.style.display = 'none';
+        }
+
+        // Muestra todas las secciones de productos por categoría
+        document.querySelectorAll('.product-category-section').forEach(section => {
+            section.style.display = 'block';
+            section.classList.add('active');
+        });
+
+        // Asegúrate de que el contenedor de secciones de productos esté visible
+        if (dynamicProductSections) {
+            dynamicProductSections.style.display = 'block';
+        }
+
+        // Actualiza el historial del navegador
+        history.pushState({ section: 'nuestro-catalogo' }, '', `#nuestro-catalogo`);
+    }
 
     /**
      * Muestra un mensaje flotante en la parte inferior de la pantalla.
@@ -305,6 +346,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentDynamicCategoryNav.appendChild(navLink);
                 });
 
+                // Esto va dentro de cargarContenido(), después de appending las categorías
+                if (currentDynamicCategoryNav.classList.contains('active')) {
+                    currentDynamicCategoryNav.style.display = 'flex'; // fuerza visibilidad por si se activó antes
+                }
+
                 // Escucha cambios en la colección de muebles (productos)
                 try {
                     onSnapshot(collection(db, "muebles"), (productSnapshot) => {
@@ -403,7 +449,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else if (link.classList.contains('nav-category-link')) {
                 const category = link.dataset.category;
-                showSection(`category-${category}`);
+                // ELIMINADO: Lógica para "all" ya no es necesaria
+                // if (category === 'all') {
+                //     showAllProducts();
+                // } else {
+                    showSection(`category-${category}`);
+                // }
                 // Cierra el menú de categorías después de seleccionar una opción
                 if (dynamicCategoryNav.classList.contains('active')) {
                     dynamicCategoryNav.classList.remove('active');
