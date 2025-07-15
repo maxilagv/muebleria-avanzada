@@ -114,6 +114,8 @@
 
             /* Dropdown de categorías en móvil */
             .category-dropdown-content {
+                display: none; /* Hidden by default */
+                flex-direction: column; /* Display as column when active */
                 position: static; /* No absolute positioning within the fixed menu */
                 width: 100%;
                 box-shadow: none; /* No shadow needed here */
@@ -122,10 +124,9 @@
                 opacity: 1; /* Always visible when parent is active */
                 visibility: visible;
                 transform: translateY(0);
-                display: none; /* Hidden by default, shown by JS */
             }
             .category-dropdown-content.active {
-                display: block; /* Show when active */
+                display: flex; /* Show when active */
             }
 
             /* FIX para la superposición de títulos de categoría en móvil */
@@ -457,7 +458,7 @@
             margin-bottom: 1.5rem;
         }
         .modal-price {
-            font-size: 1.8rem; /* Precio más grande y negrita */
+            font-size: 1.8rem; /* Precio más destacado */
             font-weight: 700;
             color: #6d5b4f;
             margin-bottom: 1.5rem;
