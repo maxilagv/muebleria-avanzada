@@ -97,11 +97,11 @@
                 z-index: 1000; /* Ensure it's above everything else */
                 overflow-y: auto; /* Enable scrolling for long menus */
                 display: flex; /* Always flex, visibility controlled by transform */
-                pointer-events: none; /* Default to none, enabled when active */
+                /* Removido: pointer-events: none; */
             }
             .nav-menu-mobile.active {
                 transform: translateX(0); /* Slide in */
-                pointer-events: auto; /* Enable clicks when active */
+                /* Removido: pointer-events: auto; */
             }
             .nav-item-mobile {
                 padding: 0.75rem 1rem;
@@ -765,7 +765,7 @@
                         <i class="fas fa-envelope contact-icon"></i>
                         <h4 class="contact-item-title">Correo Electrónico</h4>
                         <p class="contact-item-text">maxilavagetto@gmail.com</p>
-                        <a href="mailto:maxilavagetto@gmail.com" class="view-details-link mt-4">Enviar Correo</a>
+                        <a href="mailto:maxilavagetto@gmail.2com" class="view-details-link mt-4">Enviar Correo</a>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-phone-alt contact-icon"></i>
