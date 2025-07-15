@@ -68,14 +68,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cierra el menú y el overlay si se hace clic fuera de ellos
         document.addEventListener('click', (event) => {
-            if (!navMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+            const clickedInsideNavMenu = navMenu.contains(event.target);
+            const clickedToggle = menuToggle.contains(event.target);
+            const clickedDropdownToggle = categoryDropdownToggle.contains(event.target);
+            const clickedDropdownContent = dynamicCategoryNav.contains(event.target);
+
+            // Solo cerrar si el clic fue fuera de todo el menú y sus elementos hijos
+            if (!clickedInsideNavMenu && !clickedToggle && !clickedDropdownToggle && !clickedDropdownContent) {
                 navMenu.classList.remove('active');
                 mobileMenuOverlay.classList.remove('active');
-                document.body.classList.remove('menu-open'); // Permite el scroll del body
-                mainContent.classList.remove('menu-open'); // Habilita clics en el contenido principal
-            }
-            // También cierra el menú de categorías si se hace clic fuera
-            if (dynamicCategoryNav && categoryDropdownToggle && !dynamicCategoryNav.contains(event.target) && !categoryDropdownToggle.contains(event.target)) {
+                document.body.classList.remove('menu-open');
+                mainContent.classList.remove('menu-open');
                 dynamicCategoryNav.classList.remove('active');
             }
         });
@@ -400,12 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else if (link.classList.contains('nav-category-link')) {
                 const category = link.dataset.category;
-                // ELIMINADO: Lógica para "all" ya no es necesaria
-                // if (category === 'all') {
-                //     showAllProducts();
-                // } else {
-                    showSection(`category-${category}`);
-                // }
+                showSection(`category-${category}`);
                 // Cierra el menú de categorías después de seleccionar una opción
                 if (dynamicCategoryNav.classList.contains('active')) {
                     dynamicCategoryNav.classList.remove('active');
