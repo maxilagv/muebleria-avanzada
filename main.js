@@ -100,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cierra el menú al hacer clic en un enlace (para navegación móvil)
         navMenu.querySelectorAll('a').forEach(link => {
+            // EXCLUYE el toggle de categorías de este listener para que no cierre el menú principal
+            if (link.id === 'category-dropdown-toggle') {
+                return; // Omite este enlace
+            }
+
             link.addEventListener('click', () => {
                 if (navMenu.classList.contains('active')) {
                     navMenu.classList.remove('active');
@@ -309,11 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     navLink.textContent = category.nombre;
                     currentDynamicCategoryNav.appendChild(navLink);
                 });
-
-                // Esto va dentro de cargarContenido(), después de appending las categorías
-                if (currentDynamicCategoryNav.classList.contains('active')) {
-                    currentDynamicCategoryNav.style.display = 'flex'; // fuerza visibilidad por si se activó antes
-                }
 
                 // Escucha cambios en la colección de muebles (productos)
                 try {
